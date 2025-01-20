@@ -2,7 +2,7 @@ const getSignUpTheme = (mode) => ({
     palette: {
       mode,
       primary: {
-        main: mode === 'light' ? '#6E6ADE' : '#7D66D9',
+        main: mode === 'light' ? '#7d66d9' : '#6e6ade',
       },
       secondary: {
         main: '#B1A9FF',

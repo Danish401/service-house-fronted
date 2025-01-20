@@ -1,0 +1,73 @@
+{
+    "Home": "Home",
+    "About Us": "About Us",
+    "Services": "Services",
+    "whoWeAre": "Who We Are",
+    "premiumServices": "Providing Premium House Services",
+    "description": "Experience top-notch house services with our dedicated team. From cleaning to repairs, we ensure high-quality service that meets your needs and exceeds expectations.",
+    "repeatCustomers": "Repeat Customers",
+    "freshnessQuality": "Freshness & Quality",
+    "quickService": "Quick Service",
+    "positiveReviews": "Positive Reviews",
+    "learnMore": "Learn More",
+    "findService": "Find Home Service/Repair Near You",
+  "exploreService": "Explore Best Home Service & Repair near you",
+  "searchPlaceholder": "Search",
+    "newsletter": {
+      "title": "Stay Updated with Important Updates",
+      "description": "Don’t miss critical updates about job requests, scheduling, and new opportunities to grow with us.",
+      "emailPlaceholder": "Enter your email",
+      "buttonText": "Subscribe"
+    }
+,
+
+  "loading": "Loading...",
+  "updateEmployeePicture": "Update Employee Picture",
+  "employeeName": "Employee Name",
+  "email": "Email",
+  "education": "Education",
+  "experience": "Experience",
+  "fees": "Fees",
+  "address1": "Address 1",
+  "address2": "Address 2",
+  "about": "About",
+  "update": "Update",
+  "updating": "Updating...",
+
+  "bookings": {
+    "title": "My Bookings",
+    "tabs": {
+      "booked": "Booked",
+      "completed": "Completed",
+      "rejected": "Rejected"
+    },
+    "statuses": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "completed": "Completed"
+    },
+    "actions": {
+      "accept": "Accept",
+      "reject": "Reject",
+      "markAsCompleted": "Mark as Completed"
+    },
+    "messages": {
+      "loading": "Loading your bookings...",
+      "noBookings": "No bookings found.",
+      "noCompletedBookings": "No completed bookings found.",
+      "noRejectedBookings": "No rejected bookings found.",
+      "acceptSuccess": "Booking accepted successfully!",
+      "rejectSuccess": "Booking rejected successfully!",
+      "completedSuccess": "Booking marked as completed!"
+    },
+    "confirmation": {
+      "accept": "Are you sure you want to accept this booking?",
+      "reject": "Are you sure you want to reject this booking?",
+      "markCompleted": "Are you sure you want to mark this booking as completed?"
+    }
+
+  }
+
+}
+  
