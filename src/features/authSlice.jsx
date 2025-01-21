@@ -1,6 +1,12 @@
 
 
 
+
+
+
+
+
+
 // // Import necessary modules
 // import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 // import axios from "axios";
@@ -13,8 +19,38 @@
 //   isAuthenticated: false,
 //   loading: false,
 //   error: null,
+//   allUsers: [], // To store all fetched users
+//   role: null, // Track the role
 // };
-
+// export const loginWithGoogle = createAsyncThunk(
+//   "auth/loginWithGoogle",
+//   async (idToken, { rejectWithValue }) => {
+//     try {
+//       const response = await axios.post(
+//         "http://localhost:5000/api/google/google-login", 
+//         { token: idToken } // Sending the token
+//       );
+//       return response.data; // Return the server response
+//     } catch (error) {
+//       return rejectWithValue(
+//         error.response?.data?.message || "Google login failed"
+//       );
+//     }
+//   }
+// );
+// export const getAllUsers = createAsyncThunk(
+//   "auth/getAllUsers",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const response = await axios.get("http://localhost:5000/auth/all-users");
+//       return response.data.user; // Assuming API response has a `user` field
+//     } catch (error) {
+//       return rejectWithValue(
+//         error.response?.data?.message || "Failed to fetch users"
+//       );
+//     }
+//   }
+// );
 // // Thunk for logging in user
 // export const loginUser = createAsyncThunk(
 //   "auth/loginUser",
@@ -129,10 +165,38 @@
 //     resetError(state) {
 //       state.error = null;
 //     },
+//     // setUser(state, action) {
+//     //   state.user = action.payload;
+//     // },
+//     // clearUser(state) {
+//     //   state.user = null;
+//     // },
+//     setUser(state, action) {
+//       state.user = action.payload.user;
+//       state.token = action.payload.token;
+//       state.isAuthenticated = action.payload.isAuthenticated;
+//     },
+//     clearUser(state) {
+//       state.user = null;
+//       state.token = null;
+//       state.isAuthenticated = false;
+//     },
 //   },
 //   extraReducers: (builder) => {
 //     // Handle login
 //     builder
+//     .addCase(getAllUsers.pending, (state) => {
+//       state.loading = true;
+//       state.error = null;
+//     })
+//     .addCase(getAllUsers.fulfilled, (state, action) => {
+//       state.loading = false;
+//       state.allUsers = action.payload;
+//     })
+//     .addCase(getAllUsers.rejected, (state, action) => {
+//       state.loading = false;
+//       state.error = action.payload;
+//     })
 //       .addCase(loginUser.pending, (state) => {
 //         state.loading = true;
 //         state.error = null;
@@ -142,6 +206,7 @@
 //         state.isAuthenticated = true;
 //         state.user = action.payload.user;
 //         state.token = action.payload.token;
+//         state.role = action.payload.user.role; // Save the role
 //         state.customerId = action.payload.customerId; // Store customerId
 //       })
 //       .addCase(loginUser.rejected, (state, action) => {
@@ -228,12 +293,25 @@
 //       .addCase(getUserById.rejected, (state, action) => {
 //         state.loading = false;
 //         state.error = action.payload;
+//       }).addCase(loginWithGoogle.pending, (state) => {
+//         state.loading = true;
+//         state.error = null; // Clear previous errors
+//       })
+//       .addCase(loginWithGoogle.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.user = action.payload.user; // Store the user data
+//         state.isAuthenticated = true; // Mark user as authenticated
+//         state.error = null; // Clear errors
+//       })
+//       .addCase(loginWithGoogle.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload; // Store the error message
 //       });
 //   },
 // });
 
 // // Actions
-// export const { resetError } = authSlice.actions;
+// export const { resetError ,setUser, clearUser } = authSlice.actions;
 
 // // Export the reducer
 // export default authSlice.reducer;
@@ -243,10 +321,26 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Import necessary modules
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-
+import { BACKEND_URL } from "../services/helper"
 // Initial state
 const initialState = {
   user: null,
@@ -263,7 +357,7 @@ export const loginWithGoogle = createAsyncThunk(
   async (idToken, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/google/google-login", 
+`${BACKEND_URL}/api/google/google-login`, 
         { token: idToken } // Sending the token
       );
       return response.data; // Return the server response
@@ -278,7 +372,7 @@ export const getAllUsers = createAsyncThunk(
   "auth/getAllUsers",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("http://localhost:5000/auth/all-users");
+      const response = await axios.get(`${BACKEND_URL}/auth/all-users`);
       return response.data.user; // Assuming API response has a `user` field
     } catch (error) {
       return rejectWithValue(
@@ -292,7 +386,7 @@ export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const response = await axios.post("http://localhost:5000/auth/login", {
+      const response = await axios.post(`${BACKEND_URL}/auth/login`, {
         email,
         password,
       });
@@ -311,7 +405,7 @@ export const signupUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/auth/signup",
+        `${BACKEND_URL}/auth/signup`,
         userData,
         {
           headers: {
@@ -331,7 +425,7 @@ export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      await axios.post("http://localhost:5000/auth/logout");
+      await axios.post(`${BACKEND_URL}/auth/logout`);
       return true; // Logout successful
     } catch (error) {
       return rejectWithValue("Failed to logout", error);
@@ -345,7 +439,7 @@ export const getUser = createAsyncThunk(
   async (userId, { rejectWithValue, getState }) => {
     try {
       const { token } = getState().auth; // Get token from the state
-      const response = await axios.get(`http://localhost:5000/auth/getme`, {
+      const response = await axios.get(`${BACKEND_URL}/auth/getme`, {
         headers: {
           Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
         },
@@ -363,7 +457,7 @@ export const updateUser = createAsyncThunk(
   async (userData, { rejectWithValue, getState }) => {
     try {
       const { token } = getState().auth; // Get token from the state
-      const response = await axios.put("http://localhost:5000/auth/me", userData, {
+      const response = await axios.put(`${BACKEND_URL}/auth/me`, userData, {
         headers: {
           Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
           "Content-Type": "multipart/form-data", // Set the correct header for FormData
@@ -382,7 +476,7 @@ export const getUserById = createAsyncThunk(
   async (id, { rejectWithValue, getState }) => {
     try {
       const { token } = getState().auth; // Get token from the state
-      const response = await axios.get(`http://localhost:5000/auth/${id}`, {
+      const response = await axios.get(`${BACKEND_URL}/auth/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
         },
