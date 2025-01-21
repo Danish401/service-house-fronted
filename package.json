@@ -122,5 +122,4 @@
     "vite": "^5.4.10"
   },
   "proxy": "https://house-service-9q6h.onrender.com"
-
 }
