@@ -27,7 +27,7 @@ import axios from "axios"; // Import axios
 import ForgotPassword from "./ForgotPassword";
 import { loginUser,loginWithGoogle} from "../features/authSlice";
 import { notifySuccess, notifyError } from "./ToastNotification";
-import { BACKEND_URL } from "../services/helper"
+
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -42,7 +42,9 @@ const Login = () => {
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [userData, setUserdata] = useState(null);
-
+  const BACKEND_URL =process.env.NODE_ENV === "production"
+    ? "https://house-service-9q6h.onrender.com/"
+    : "http://localhost:5000/";
   const handleForgotPasswordClick = () => {
     navigate("/forgot-password"); // Navigate to the ForgotPassword component
   };
@@ -143,7 +145,7 @@ const Login = () => {
 
 
   const handleGoogleLogin = async () => {
-    window.open(`${BACKEND_URL}/auth/google/callback`, "_self");
+    window.open(`${BACKEND_URL}auth/google/callback`, "_self");
   };
 
   

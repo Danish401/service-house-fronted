@@ -250,7 +250,11 @@
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { BACKEND_URL } from "../services/helper";
+const BACKEND_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://house-service-9q6h.onrender.com/"
+    : "http://localhost:5000/";
+
 // Initial state
 const initialState = {
   formValues: {
@@ -287,7 +291,7 @@ export const registerEmployee = createAsyncThunk(
       });
 
       const response = await axios.post(
-        `${BACKEND_URL}/api/employees/register`,
+        `${BACKEND_URL}api/employees/register`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -310,8 +314,9 @@ export const loginEmployee = createAsyncThunk(
   async (loginData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        `${BACKEND_URL}/api/employees/login`,
-        loginData
+        `${BACKEND_URL}api/employees/login`,
+        loginData,
+        { withCredentials: true }
       );
       const { token, employee } = response.data;
 
@@ -332,7 +337,7 @@ export const getAllEmployees = createAsyncThunk(
     try {
       const { token } = getState().employeeRegister;
       const response = await axios.get(
-        `${BACKEND_URL}/api/employees/employees`,
+        `${BACKEND_URL}api/employees/employees`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -355,7 +360,7 @@ export const getEmployeeById = createAsyncThunk(
     try {
       const { token } = getState().employeeRegister;
       const response = await axios.get(
-        `${BACKEND_URL}/api/employees/employees/${id}`,
+        `${BACKEND_URL}api/employees/employees/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -383,7 +388,7 @@ export const updateEmployeeById = createAsyncThunk(
       });
 
       const response = await axios.put(
-        `${BACKEND_URL}/api/employees/${id}`,
+        `${BACKEND_URL}api/employees/${id}`,
         formData,
         {
           headers: {

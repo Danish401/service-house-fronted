@@ -25,7 +25,7 @@ import axios from "axios";
 import p from "../assets/images/profile.png";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { logoutUser, setUser, clearUser } from "../features/authSlice"; // Adjust the path accordingly
-import { BACKEND_URL } from "../services/helper"
+
 function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -35,17 +35,27 @@ function Header() {
   const [userdata, setUserdata] = useState({});
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
-
+  const BACKEND_URL =process.env.NODE_ENV === "production"
+    ? "https://house-service-9q6h.onrender.com/"
+    : "http://localhost:5000/";
   useEffect(() => {
     if (!isAuthenticated) {
       getUser();
     }
   }, [isAuthenticated]);
-
   const getUser = async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/login/success`, {
-        withCredentials: true,
+      const token = localStorage.getItem("token"); // Get token from localStorage
+      if (!token) {
+        console.log("Token not found");
+        return;
+      }
+
+      const response = await axios.get(`${BACKEND_URL}login/success`, {
+        withCredentials: true, // Allow sending cookies
+        headers: {
+          Authorization: `Bearer ${token}`, // Send token in header
+        },
       });
 
       if (response.data.success) {
@@ -64,7 +74,6 @@ function Header() {
       dispatch(clearUser());
     }
   };
-
   
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
@@ -86,7 +95,7 @@ function Header() {
       // If the user logged in via Google, log them out from Google
       if (user?.googleId) {
         await axios.post(
-          `${BACKEND_URL}/auth/logout/google`,
+          `${BACKEND_URL}auth/logout/google`,
           {},
           { withCredentials: true }
         );

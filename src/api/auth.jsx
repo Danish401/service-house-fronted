@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BACKEND_URL } from "../services/helper";
+const BACKEND_URL = "https://house-service-9q6h.onrender.com";
 // Change this URL to point to your backend's route
 const API = axios.create({ baseURL: `${BACKEND_URL}/api/auth` });
 

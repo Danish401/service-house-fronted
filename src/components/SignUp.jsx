@@ -11,12 +11,14 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { loginUser, signupUser } from "../features/authSlice";
 import { GoogleLogin } from "@react-oauth/google";
-import { BACKEND_URL } from "../services/helper"
+
 const SignUp = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isDarkMode = useSelector((state) => state.bookings.isDarkMode);
-
+  const BACKEND_URL =process.env.NODE_ENV === "production"
+    ? "https://house-service-9q6h.onrender.com/"
+    : "http://localhost:5000/";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -86,7 +88,7 @@ const SignUp = () => {
   };
 const handleLogout = async () => {
   try {
-    const response = await fetch(`${BACKEND_URL}/logout`, {
+    const response = await fetch(`${BACKEND_URL}logout`, {
       method: "GET",
       credentials: "include", // Important for sending cookies
     });
@@ -104,7 +106,7 @@ const handleLogout = async () => {
 };
 
   const handleGoogleSignup = async () => {
-    window.open(`${BACKEND_URL}/auth/google/callback`, "_self");
+    window.open(`${BACKEND_URL}auth/google/callback`, "_self");
   };
 
 

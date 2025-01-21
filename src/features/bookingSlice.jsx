@@ -465,13 +465,16 @@
 
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { BACKEND_URL } from "../services/helper"
+const BACKEND_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://house-service-9q6h.onrender.com/"
+    : "http://localhost:5000/";
 // Async Thunks
 export const createBooking = createAsyncThunk(
   'bookings/createBooking',
   async (bookingData, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/bookings/`, {
+      const response = await fetch(`${BACKEND_URL}api/bookings/`, {
         method: 'POST',
         body: JSON.stringify(bookingData),
         headers: { 'Content-Type': 'application/json' },
@@ -489,7 +492,7 @@ export const getAllBookings = createAsyncThunk(
   'bookings/getAllBookings',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/bookings/`, {
+      const response = await fetch(`${BACKEND_URL}api/bookings/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -521,7 +524,7 @@ export const fetchBookingById = createAsyncThunk(
       return rejectWithValue('Invalid bookingId');
     }
     try {
-      const response = await fetch(`${BACKEND_URL}/api/bookings/${bookingId}`);
+      const response = await fetch(`${BACKEND_URL}api/bookings/${bookingId}`);
       if (!response.ok) throw new Error('Failed to fetch booking');
       return await response.json();
     } catch (error) {
@@ -540,7 +543,7 @@ export const updateBooking = createAsyncThunk(
       return rejectWithValue("Invalid bookingId or updates");
     }
     try {
-      const response = await fetch(`${BACKEND_URL}/api/bookings/booking/${bookingId}`, {
+      const response = await fetch(`${BACKEND_URL}api/bookings/booking/${bookingId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates),
@@ -557,7 +560,7 @@ export const cancelBooking = createAsyncThunk(
   "bookings/cancelBooking",
   async (bookingId, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/bookings/cancel/${bookingId}`, {
+      const response = await fetch(`${BACKEND_URL}api/bookings/cancel/${bookingId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
       });
@@ -577,7 +580,7 @@ export const updateBookingStatus = createAsyncThunk(
   "bookings/updateBookingStatus",
   async ({ bookingId, status }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/bookings/bookings/${bookingId}/status`, {
+      const response = await fetch(`${BACKEND_URL}api/bookings/bookings/${bookingId}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }), // Send the status in the request body
@@ -601,7 +604,7 @@ export const createRazorpayOrder = createAsyncThunk(
   'bookings/createRazorpayOrder',
   async (paymentData, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/payments/createOrder`, {
+      const response = await fetch(`${BACKEND_URL}api/payments/createOrder`, {
         method: 'POST',
         body: JSON.stringify(paymentData),
         headers: { 'Content-Type': 'application/json' },
@@ -619,7 +622,7 @@ export const verifyRazorpayPayment = createAsyncThunk(
   'bookings/verifyRazorpayPayment',
   async (paymentData, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/payments/verifyPayment`, {
+      const response = await fetch(`${BACKEND_URL}api/payments/verifyPayment`, {
         method: 'POST',
         body: JSON.stringify(paymentData),
         headers: { 'Content-Type': 'application/json' },
@@ -641,7 +644,7 @@ export const getCustomerBookings = createAsyncThunk(
       return rejectWithValue('Invalid customer ID');
     }
     try {
-      const response = await fetch(`${BACKEND_URL}/api/bookings/customer/${customerId}`, {
+      const response = await fetch(`${BACKEND_URL}api/bookings/customer/${customerId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -668,7 +671,7 @@ export const getEmployeeBookings = createAsyncThunk(
       return rejectWithValue("Invalid Employee ID");
     }
     try {
-      const response = await fetch(`${BACKEND_URL}/api/bookings/employee/${employeeId}`, {
+      const response = await fetch(`${BACKEND_URL}api/bookings/employee/${employeeId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

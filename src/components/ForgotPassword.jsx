@@ -8,7 +8,7 @@ import { Button, TextField, Typography, Snackbar, Alert, Card, CardContent } fro
 import { styled } from '@mui/material/styles'; // Ensure this is included
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { BACKEND_URL } from "../services/helper"
+const BACKEND_URL = "https://house-service-9q6h.onrender.com";
 const OtpInputStyled = styled(MuiOtpInput)(({ theme }) => ({
   marginBottom: '15px',
   '& .MuiOtpInput-input': {
