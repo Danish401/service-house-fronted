@@ -252,7 +252,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 const BACKEND_URL =
   process.env.NODE_ENV === "production"
-    ? "https://house-service-9q6h.onrender.com/"
+    ? "https://houseservicebackend.onrender.com/"
     : "http://localhost:5000/";
 
 // Initial state

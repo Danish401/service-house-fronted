@@ -36,7 +36,7 @@ function Header() {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
   const BACKEND_URL =process.env.NODE_ENV === "production"
-    ? "https://house-service-9q6h.onrender.com/"
+    ? "https://houseservicebackend.onrender.com/"
     : "http://localhost:5000/";
   useEffect(() => {
     if (!isAuthenticated) {

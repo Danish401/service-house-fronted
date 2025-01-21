@@ -467,7 +467,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 const BACKEND_URL =
   process.env.NODE_ENV === "production"
-    ? "https://house-service-9q6h.onrender.com/"
+    ? "https://houseservicebackend.onrender.com/"
     : "http://localhost:5000/";
 // Async Thunks
 export const createBooking = createAsyncThunk(

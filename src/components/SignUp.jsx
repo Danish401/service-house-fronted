@@ -17,7 +17,7 @@ const SignUp = () => {
   const dispatch = useDispatch();
   const isDarkMode = useSelector((state) => state.bookings.isDarkMode);
   const BACKEND_URL =process.env.NODE_ENV === "production"
-    ? "https://house-service-9q6h.onrender.com/"
+    ? "https://houseservicebackend.onrender.com/"
     : "http://localhost:5000/";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
