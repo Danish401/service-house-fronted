@@ -1,5 +1,3 @@
-
-
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -136,7 +134,9 @@ function Booking() {
     <div
       key={booking._id}
       className={`flex flex-col md:flex-row items-center md:items-start p-4 border rounded-lg shadow-md mb-6 w-full md:w-[48%] ${
-        isDarkMode ? "bg-gray-800 text-white border-[#000000] " : "bg-white text-gray-800"
+        isDarkMode
+          ? "bg-gray-800 text-white border-[#000000] "
+          : "bg-white text-gray-800"
       }`}
     >
       <img
@@ -174,14 +174,17 @@ function Booking() {
           </div>
           <DownloadReceipt bookingId={booking._id} />
         </div>
-        {["Pending", "booked","Accepted" ].includes(booking.status) && (
+        {["Pending", "booked", "Accepted"].includes(booking.status) && (
           <div className="flex gap-2 mt-4">
             <Link
-             to={`/booking/detail/${booking._id}`}
-             className="flex items-center justify-center w-auto gap-2 px-4 py-2 text-white transition-all bg-indigo-500 rounded-md shadow-md hover:bg-indigo-600 active:scale-95"
-           >
-             <SiChatbot className={`text-lg ${isDarkMode ? "text-yellow-500" : "text-indigo-200"}`} />
-          
+              to={`/booking/detail/${booking._id}`}
+              className="flex items-center justify-center w-auto gap-2 px-4 py-2 text-white transition-all bg-indigo-500 rounded-md shadow-md hover:bg-indigo-600 active:scale-95"
+            >
+              <SiChatbot
+                className={`text-lg ${
+                  isDarkMode ? "text-yellow-500" : "text-indigo-200"
+                }`}
+              />
               Schedule Booking or Live Chat
             </Link>
             <button
@@ -212,22 +215,21 @@ function Booking() {
       }`}
     >
       <Tabs>
-      <TabsList className="flex justify-start w-full gap-2 p-2 mt-8 mb-6 overflow-x-auto whitespace-nowrap sm:justify-center rounded-r-3xl">
-  {tabs.map((tab) => (
-    <motion.div
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
-      key={tab.value}
-      className={`px-4 py-2 border rounded-md ${
-        isDarkMode ? "text-white border-[#000000]" : "text-black"
-      }`}
-      style={{ backgroundColor: colors[tab.value] }}
-    >
-      <TabsTrigger value={tab.value}>{tab.label}</TabsTrigger>
-    </motion.div>
-  ))}
-</TabsList>
-
+        <TabsList className="flex justify-start w-full gap-2 p-2 mt-8 mb-6 overflow-x-auto whitespace-nowrap sm:justify-center rounded-r-3xl">
+          {tabs.map((tab) => (
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              key={tab.value}
+              className={`px-4 py-2 border rounded-md ${
+                isDarkMode ? "text-white border-[#000000]" : "text-black"
+              }`}
+              style={{ backgroundColor: colors[tab.value] }}
+            >
+              <TabsTrigger value={tab.value}>{tab.label}</TabsTrigger>
+            </motion.div>
+          ))}
+        </TabsList>
 
         {tabs.map((tab) => (
           <TabsContent value={tab.value} key={tab.value}>
