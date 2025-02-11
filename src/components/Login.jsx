@@ -43,8 +43,8 @@ const Login = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [userData, setUserdata] = useState(null);
   const BACKEND_URL =process.env.NODE_ENV === "production"
-    ? "https://houseservicebackend.onrender.com/"
-    : "http://localhost:5000/";
+    ? "https://servicehouse.onrender.com"
+    : "http://localhost:5000";
   const handleForgotPasswordClick = () => {
     navigate("/forgot-password"); // Navigate to the ForgotPassword component
   };
@@ -145,7 +145,7 @@ const Login = () => {
 
 
   const handleGoogleLogin = async () => {
-    window.open(`${BACKEND_URL}auth/google/callback`, "_self");
+    window.open(`${BACKEND_URL}/auth/google/callback`, "_self");
   };
 
   

@@ -38,11 +38,13 @@ import StepperSignup from "./components/StepperSignup";
 import Chart from "./Admin/Chart";
 import IndiaMap from "./Admin/IndiaMap"; // Import IndiaMap
 import AdminSignUp from "./Admin/AdminSignUp";
+import AddCustomer from "./Admin/AddCustomer";
 import BusinessListPage from "./components/BusinessListPage";
 import EmployeeRegisterPage from "./components/EmployeeRegisterPage";
 import NotFoundPage from "./components/NotFoundPage";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import the ProtectedRoute component
-
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 import {
   
   getAllUsers,
@@ -56,6 +58,12 @@ import {
 import {
   getAllBookings,
 } from "../src/features/bookingSlice";  // Ensure you're dispatching correct actions
+import ProfileUpdate from "./Admin/ProfileUpdate";
+import UserDetails from "./Admin/UserDetails";
+import DetailsCustomer from "./Admin/DetailsCustomer";
+import CustomerProfile from "./Admin/CustomerProfile";
+// import EmployeeChatComponent from "./components/EmployeeChatComponent";
+import EmployeeBookingDetails from "./components/EmployeeBookingDetails";
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const dispatch = useDispatch();
@@ -103,9 +111,13 @@ function App() {
   };
 
   return (
+    
     <ThemeProvider theme={theme}>
+         <ToastContainer position="top-right" autoClose={3000} />
       <Router>
         <RenderHeader />
+        
+
         <div className={`pt-16 ${isDarkMode ? "dark" : ""}`}>
           <Routes>
             {/* Default Routes */}
@@ -139,6 +151,11 @@ function App() {
               path="/user/profile-employee"
               element={<ProfileEmployee />}
             />
+             <Route
+              path="/user/booking/detail/:bookingId"
+              element={<EmployeeBookingDetails />}
+            />
+
             <Route
               path="/user/bookings/customer"
               element={<EmployeeBooking />}
@@ -147,6 +164,8 @@ function App() {
               path="/user/Employee-register"
               element={<EmployeeRegisterPage />}
             />
+            {/* <Route path="/user/employee/chat/:bookingId" element={<EmployeeChatComponent />} /> */}
+
             <Route path="/user/Employee-login" element={<EmployeeLogin />} />
             {/* Dashboard Routes */}
             {/* <Route path="/dashboard" element={<Dashboard />}>
@@ -172,7 +191,11 @@ function App() {
               <Route
                 path="add-users"
                 element={<ProtectedRoute element={<AddUsers />} />}
-              />
+              /> 
+ <Route
+                path="add-customer"
+                element={<ProtectedRoute element={<AddCustomer />} />}
+              /> 
               <Route
                 path="all-users"
                 element={<ProtectedRoute element={<UsersList />} />}
@@ -181,8 +204,12 @@ function App() {
                 path="all-customers"
                 element={<ProtectedRoute element={<CustomerList />} />}
               />
+<Route path="user-detail/:id" element={<ProtectedRoute element={<UserDetails />} />} />
+<Route path="customers-detail/:id" element={<ProtectedRoute element={<DetailsCustomer />} />} />
               <Route path="admin-signup" element={<AdminSignUp />} />{" "}
               {/* No protection here */}
+              <Route path="customer-profile/:id" element={<ProtectedRoute element={<CustomerProfile />} />} />
+              <Route path="profile-update/:id" element={<ProtectedRoute element={<ProfileUpdate />} />} />
             </Route>
           </Routes>
         </div>

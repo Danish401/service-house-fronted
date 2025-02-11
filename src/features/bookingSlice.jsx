@@ -1,7 +1,3 @@
-
-
-
-
 // import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 // import { BACKEND_URL } from "../services/helper"
 // // Async Thunks
@@ -68,8 +64,6 @@
 //   }
 // );
 
-
-
 // // Update booking thunk
 // export const updateBooking = createAsyncThunk(
 //   "bookings/updateBooking",
@@ -134,7 +128,6 @@
 //   }
 // );
 
-
 // export const createRazorpayOrder = createAsyncThunk(
 //   'bookings/createRazorpayOrder',
 //   async (paymentData, { rejectWithValue }) => {
@@ -171,7 +164,6 @@
 //   }
 // );
 
-
 // export const getCustomerBookings = createAsyncThunk(
 //   'bookings/getCustomerBookings',
 //   async (customerId, { rejectWithValue }) => {
@@ -197,8 +189,6 @@
 //   }
 // );
 
-
-
 // export const getEmployeeBookings = createAsyncThunk(
 //   "bookings/getEmployeeBookings",
 //   async (employeeId, { rejectWithValue }) => {
@@ -223,12 +213,6 @@
 //     }
 //   }
 // );
-
-
-
-
-
-
 
 // // Slice
 // export const bookingSlice = createSlice({
@@ -259,7 +243,7 @@
 //         state.completed.push(completedBooking);
 //       }
 //     },
-   
+
 //     toggleDarkMode: (state) => {
 //       state.isDarkMode = !state.isDarkMode;
 //     },
@@ -458,28 +442,22 @@
 
 // export default bookingSlice.reducer;
 
-
-
-
-
-
-
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 const BACKEND_URL =
   process.env.NODE_ENV === "production"
-    ? "https://houseservicebackend.onrender.com/"
-    : "http://localhost:5000/";
+    ? "https://servicehouse.onrender.com"
+    : "http://localhost:5000";
 // Async Thunks
 export const createBooking = createAsyncThunk(
-  'bookings/createBooking',
+  "bookings/createBooking",
   async (bookingData, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${BACKEND_URL}api/bookings/`, {
-        method: 'POST',
+      const response = await fetch(`${BACKEND_URL}/api/bookings/`, {
+        method: "POST",
         body: JSON.stringify(bookingData),
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
-      if (!response.ok) throw new Error('Failed to create booking');
+      if (!response.ok) throw new Error("Failed to create booking");
       const data = await response.json();
       return data;
     } catch (error) {
@@ -489,51 +467,38 @@ export const createBooking = createAsyncThunk(
 );
 
 export const getAllBookings = createAsyncThunk(
-  'bookings/getAllBookings',
+  "bookings/getAllBookings",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${BACKEND_URL}api/bookings/`, {
-        method: 'GET',
+      const response = await fetch(`${BACKEND_URL}/api/bookings/`, {
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       // Check if the response is not ok
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('Error fetching bookings:', errorData.message || 'Unknown error');
-        throw new Error(errorData.message || 'Failed to fetch bookings');
+        console.error(
+          "Error fetching bookings:",
+          errorData.message || "Unknown error"
+        );
+        throw new Error(errorData.message || "Failed to fetch bookings");
       }
 
       // Parse the response JSON
       const bookingsData = await response.json();
-      console.log('Fetched bookings:', bookingsData);
+      console.log("Fetched bookings:", bookingsData);
       return bookingsData; // Return fetched bookings
     } catch (error) {
-      console.error('Fetch bookings error:', error.message);
-      return rejectWithValue(error.message || 'An unknown error occurred while fetching bookings');
+      console.error("Fetch bookings error:", error.message);
+      return rejectWithValue(
+        error.message || "An unknown error occurred while fetching bookings"
+      );
     }
   }
 );
-
-export const fetchBookingById = createAsyncThunk(
-  'bookings/getBookingById',
-  async (bookingId, { rejectWithValue }) => {
-    if (!bookingId) {
-      return rejectWithValue('Invalid bookingId');
-    }
-    try {
-      const response = await fetch(`${BACKEND_URL}api/bookings/${bookingId}`);
-      if (!response.ok) throw new Error('Failed to fetch booking');
-      return await response.json();
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
-
 
 // Update booking thunk
 export const updateBooking = createAsyncThunk(
@@ -543,11 +508,14 @@ export const updateBooking = createAsyncThunk(
       return rejectWithValue("Invalid bookingId or updates");
     }
     try {
-      const response = await fetch(`${BACKEND_URL}api/bookings/booking/${bookingId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updates),
-      });
+      const response = await fetch(
+        `${BACKEND_URL}/api/bookings/booking/${bookingId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updates),
+        }
+      );
       if (!response.ok) throw new Error("Failed to update booking");
       return await response.json();
     } catch (error) {
@@ -560,15 +528,18 @@ export const cancelBooking = createAsyncThunk(
   "bookings/cancelBooking",
   async (bookingId, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${BACKEND_URL}api/bookings/cancel/${bookingId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await fetch(
+        `${BACKEND_URL}/api/bookings/cancel/${bookingId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to cancel booking");
 
       const updatedBooking = await response.json();
-      console.log("Updated Booking:", updatedBooking);  // Log the updated booking
+      console.log("Updated Booking:", updatedBooking); // Log the updated booking
       return updatedBooking; // Return the updated booking data
     } catch (error) {
       return rejectWithValue(error.message);
@@ -580,11 +551,14 @@ export const updateBookingStatus = createAsyncThunk(
   "bookings/updateBookingStatus",
   async ({ bookingId, status }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${BACKEND_URL}api/bookings/bookings/${bookingId}/status`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }), // Send the status in the request body
-      });
+      const response = await fetch(
+        `${BACKEND_URL}/api/bookings/bookings/${bookingId}/status`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status }), // Send the status in the request body
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -599,17 +573,16 @@ export const updateBookingStatus = createAsyncThunk(
   }
 );
 
-
 export const createRazorpayOrder = createAsyncThunk(
-  'bookings/createRazorpayOrder',
+  "bookings/createRazorpayOrder",
   async (paymentData, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${BACKEND_URL}api/payments/createOrder`, {
-        method: 'POST',
+      const response = await fetch(`${BACKEND_URL}/api/payments/createOrder`, {
+        method: "POST",
         body: JSON.stringify(paymentData),
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
-      if (!response.ok) throw new Error('Failed to create Razorpay order');
+      if (!response.ok) throw new Error("Failed to create Razorpay order");
       const data = await response.json();
       return data; // Should return orderId
     } catch (error) {
@@ -619,15 +592,18 @@ export const createRazorpayOrder = createAsyncThunk(
 );
 
 export const verifyRazorpayPayment = createAsyncThunk(
-  'bookings/verifyRazorpayPayment',
+  "bookings/verifyRazorpayPayment",
   async (paymentData, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${BACKEND_URL}api/payments/verifyPayment`, {
-        method: 'POST',
-        body: JSON.stringify(paymentData),
-        headers: { 'Content-Type': 'application/json' },
-      });
-      if (!response.ok) throw new Error('Payment verification failed');
+      const response = await fetch(
+        `${BACKEND_URL}/api/payments/verifyPayment`,
+        {
+          method: "POST",
+          body: JSON.stringify(paymentData),
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (!response.ok) throw new Error("Payment verification failed");
       const data = await response.json();
       return data; // Should return payment status and other details
     } catch (error) {
@@ -636,23 +612,27 @@ export const verifyRazorpayPayment = createAsyncThunk(
   }
 );
 
-
 export const getCustomerBookings = createAsyncThunk(
-  'bookings/getCustomerBookings',
+  "bookings/getCustomerBookings",
   async (customerId, { rejectWithValue }) => {
     if (!customerId) {
-      return rejectWithValue('Invalid customer ID');
+      return rejectWithValue("Invalid customer ID");
     }
     try {
-      const response = await fetch(`${BACKEND_URL}api/bookings/customer/${customerId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        `${BACKEND_URL}/api/bookings/customer/${customerId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch customer bookings');
+        throw new Error(
+          errorData.message || "Failed to fetch customer bookings"
+        );
       }
       const customerBookings = await response.json();
       return customerBookings;
@@ -662,8 +642,6 @@ export const getCustomerBookings = createAsyncThunk(
   }
 );
 
-
-
 export const getEmployeeBookings = createAsyncThunk(
   "bookings/getEmployeeBookings",
   async (employeeId, { rejectWithValue }) => {
@@ -671,12 +649,15 @@ export const getEmployeeBookings = createAsyncThunk(
       return rejectWithValue("Invalid Employee ID");
     }
     try {
-      const response = await fetch(`${BACKEND_URL}api/bookings/employee/${employeeId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${BACKEND_URL}/api/bookings/employee/${employeeId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to fetch bookings");
@@ -689,15 +670,114 @@ export const getEmployeeBookings = createAsyncThunk(
   }
 );
 
+// export const downloadBookingReceipt = createAsyncThunk(
+//   "bookings/invoice",
+//   async (bookingId, { rejectWithValue }) => {
+//     try {
+//       const response = await fetch(
+//         `${BACKEND_URL}api/bookings/download-receipt/${bookingId}`,
+//         {
+//           method: "GET",
+//           headers: {
+//             Accept: "application/pdf",
+//           },
+//         }
+//       );
 
+//       if (!response.ok) throw new Error("Failed to download receipt");
 
+//       // Convert response to Blob
+//       const blob = await response.blob();
 
+//       // Extract filename from Content-Disposition header
+//       const contentDisposition = response.headers.get("Content-Disposition");
+//       let filename = `invoice_${bookingId}.pdf`;
+//       if (contentDisposition) {
+//         const match = contentDisposition.match(/filename="?([^"]+)"?/);
+//         if (match) filename = match[1];
+//       }
 
+//       // Create a download link and trigger the download
+//       const url = window.URL.createObjectURL(blob);
+//       const a = document.createElement("a");
+//       a.href = url;
+//       a.download = filename;
+//       document.body.appendChild(a);
+//       a.click();
+//       document.body.removeChild(a);
+//       window.URL.revokeObjectURL(url);
 
+//       return "Download successful";
+//     } catch (error) {
+//       return rejectWithValue(error.message);
+//     }
+//   }
+// );
+
+export const downloadBookingReceipt = createAsyncThunk(
+  "bookings/invoice",
+  async (bookingId, { rejectWithValue }) => {
+    try {
+      const response = await fetch(
+        `${BACKEND_URL}/api/bookings/download-receipt/${bookingId}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/pdf",
+          },
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to download receipt");
+
+      // Convert response to Blob
+      const blob = await response.blob();
+
+      // Extract filename from Content-Disposition header
+      const contentDisposition = response.headers.get("Content-Disposition");
+      let filename = `invoice_${bookingId}.pdf`;
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="?([^"]+)"?/);
+        if (match && match[1]) {
+          filename = decodeURIComponent(match[1]); // Decode in case of encoding
+        }
+      }
+
+      // Create a download link and trigger the download
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+      return "Download successful";
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+export const fetchBookingById = createAsyncThunk(
+  "bookings/getBookingById",
+  async (bookingId, { rejectWithValue }) => {
+    if (!bookingId) {
+      return rejectWithValue("Invalid bookingId");
+    }
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/bookings/${bookingId}`);
+      if (!response.ok) throw new Error("Failed to fetch booking");
+      return await response.json();
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 // Slice
 export const bookingSlice = createSlice({
-  name: 'bookings',
+  name: "bookings",
   initialState: {
     booked: [], // Array for all active bookings
     completed: [], // Array for completed bookings
@@ -710,9 +790,10 @@ export const bookingSlice = createSlice({
     paymentVerified: false, // Whether payment is verified
     customerBookings: [], // Array for bookings specific to a customer
     employeeBookings: [],
-      status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
-       bookings: [], // List of bookings,
-      allbookings:[],
+    status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
+    bookings: [], // List of bookings,
+    allbookings: [],
+    invoiceDownloadStatus: "idle",
   },
   reducers: {
     markAsCompleted(state, action) {
@@ -724,38 +805,49 @@ export const bookingSlice = createSlice({
         state.completed.push(completedBooking);
       }
     },
-   
+
     toggleDarkMode: (state) => {
       state.isDarkMode = !state.isDarkMode;
     },
   },
   extraReducers: (builder) => {
     builder
-    .addCase(getCustomerBookings.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    })
-    .addCase(getCustomerBookings.fulfilled, (state, action) => {
-      state.loading = false;
-      state.customerBookings = action.payload;
-    })
-    .addCase(getCustomerBookings.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    })
-    .addCase(getEmployeeBookings.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    })
-    .addCase(getEmployeeBookings.fulfilled, (state, action) => {
-      state.loading = false;
-      state.employeeBookings = action.payload;
-    })
-    .addCase(getEmployeeBookings.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    })
-       .addCase(updateBookingStatus.pending, (state) => {
+      .addCase(getCustomerBookings.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getCustomerBookings.fulfilled, (state, action) => {
+        state.loading = false;
+        state.customerBookings = action.payload;
+      })
+      .addCase(getCustomerBookings.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(downloadBookingReceipt.pending, (state) => {
+        state.invoiceDownloadStatus = "loading";
+      })
+      .addCase(downloadBookingReceipt.fulfilled, (state, action) => {
+        state.invoiceDownloadStatus = "succeeded";
+        state.error = null; // Clear error if the download was successful
+      })
+      .addCase(downloadBookingReceipt.rejected, (state, action) => {
+        state.invoiceDownloadStatus = "failed";
+        state.error = action.payload; // Set the error message from the thunk
+      })
+      .addCase(getEmployeeBookings.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getEmployeeBookings.fulfilled, (state, action) => {
+        state.loading = false;
+        state.employeeBookings = action.payload;
+      })
+      .addCase(getEmployeeBookings.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateBookingStatus.pending, (state) => {
         state.status = "loading";
         state.error = null;
       })
@@ -764,7 +856,9 @@ export const bookingSlice = createSlice({
         const updatedBooking = action.payload.booking;
 
         // Update the booking in the list
-        const index = state.bookings.findIndex((b) => b._id === updatedBooking._id);
+        const index = state.bookings.findIndex(
+          (b) => b._id === updatedBooking._id
+        );
         if (index !== -1) {
           state.bookings[index] = updatedBooking;
         }
@@ -773,34 +867,34 @@ export const bookingSlice = createSlice({
         state.status = "failed";
         state.error = action.payload;
       })
-    .addCase(createRazorpayOrder.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    })
-    .addCase(createRazorpayOrder.fulfilled, (state, action) => {
-      state.loading = false;
-      state.razorpayOrderId = action.payload.orderId; // Store the orderId for use on frontend
-    })
-    .addCase(createRazorpayOrder.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    })
+      .addCase(createRazorpayOrder.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createRazorpayOrder.fulfilled, (state, action) => {
+        state.loading = false;
+        state.razorpayOrderId = action.payload.orderId; // Store the orderId for use on frontend
+      })
+      .addCase(createRazorpayOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
-    // Handle Verify Razorpay Payment
-    .addCase(verifyRazorpayPayment.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    })
-    .addCase(verifyRazorpayPayment.fulfilled, (state, action) => {
-      state.loading = false;
-      state.paymentVerified = true;
-      // Handle successful payment verification here, such as updating the payment status
-    })
-    .addCase(verifyRazorpayPayment.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-      state.paymentVerified = false;
-    })
+      // Handle Verify Razorpay Payment
+      .addCase(verifyRazorpayPayment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(verifyRazorpayPayment.fulfilled, (state, action) => {
+        state.loading = false;
+        state.paymentVerified = true;
+        // Handle successful payment verification here, such as updating the payment status
+      })
+      .addCase(verifyRazorpayPayment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.paymentVerified = false;
+      })
       // Handle Create Booking
       .addCase(createBooking.pending, (state) => {
         state.loading = true;
@@ -842,24 +936,39 @@ export const bookingSlice = createSlice({
 
         // Merge details into the booked array
         if (booking.status === "Active") {
-          const existingBookingIndex = state.booked.findIndex((b) => b._id === booking._id);
+          const existingBookingIndex = state.booked.findIndex(
+            (b) => b._id === booking._id
+          );
           if (existingBookingIndex !== -1) {
             // Update the booking with all details from bookingDetails
-            state.booked[existingBookingIndex] = { ...state.booked[existingBookingIndex], ...booking };
+            state.booked[existingBookingIndex] = {
+              ...state.booked[existingBookingIndex],
+              ...booking,
+            };
           } else {
             state.booked.push(booking);
           }
         } else if (booking.status === "Completed") {
-          const existingBookingIndex = state.completed.findIndex((b) => b._id === booking._id);
+          const existingBookingIndex = state.completed.findIndex(
+            (b) => b._id === booking._id
+          );
           if (existingBookingIndex !== -1) {
-            state.completed[existingBookingIndex] = { ...state.completed[existingBookingIndex], ...booking };
+            state.completed[existingBookingIndex] = {
+              ...state.completed[existingBookingIndex],
+              ...booking,
+            };
           } else {
             state.completed.push(booking);
           }
         } else if (booking.status === "Cancelled") {
-          const existingBookingIndex = state.cancelled.findIndex((b) => b._id === booking._id);
+          const existingBookingIndex = state.cancelled.findIndex(
+            (b) => b._id === booking._id
+          );
           if (existingBookingIndex !== -1) {
-            state.cancelled[existingBookingIndex] = { ...state.cancelled[existingBookingIndex], ...booking };
+            state.cancelled[existingBookingIndex] = {
+              ...state.cancelled[existingBookingIndex],
+              ...booking,
+            };
           } else {
             state.cancelled.push(booking);
           }
@@ -871,7 +980,8 @@ export const bookingSlice = createSlice({
       .addCase(fetchBookingById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      }).addCase(updateBooking.pending, (state) => {
+      })
+      .addCase(updateBooking.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -880,19 +990,25 @@ export const bookingSlice = createSlice({
         const updatedBooking = action.payload.booking;
 
         // Update booking in the booked array
-        const existingBookingIndex = state.booked.findIndex((b) => b._id === updatedBooking._id);
+        const existingBookingIndex = state.booked.findIndex(
+          (b) => b._id === updatedBooking._id
+        );
         if (existingBookingIndex !== -1) {
           state.booked[existingBookingIndex] = updatedBooking;
         }
 
         // Update booking in the completed or cancelled arrays if needed
         if (updatedBooking.status === "Completed") {
-          const existingIndex = state.completed.findIndex((b) => b._id === updatedBooking._id);
+          const existingIndex = state.completed.findIndex(
+            (b) => b._id === updatedBooking._id
+          );
           if (existingIndex !== -1) {
             state.completed[existingIndex] = updatedBooking;
           }
         } else if (updatedBooking.status === "Cancelled") {
-          const existingIndex = state.cancelled.findIndex((b) => b._id === updatedBooking._id);
+          const existingIndex = state.cancelled.findIndex(
+            (b) => b._id === updatedBooking._id
+          );
           if (existingIndex !== -1) {
             state.cancelled[existingIndex] = updatedBooking;
           }
@@ -904,7 +1020,8 @@ export const bookingSlice = createSlice({
       .addCase(updateBooking.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      }) .addCase(cancelBooking.fulfilled, (state, action) => {
+      })
+      .addCase(cancelBooking.fulfilled, (state, action) => {
         const updatedBooking = action.payload.booking;
         const index = state.booked.findIndex(
           (booking) => booking._id === updatedBooking._id

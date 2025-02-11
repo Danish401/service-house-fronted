@@ -21,7 +21,7 @@ function BusinessList({ showAll = false, title }) {
 
   if (loading) {
     return (
-      <div className={`py-1 ${isDarkMode ? 'text-white bg-dark' : 'text-black bg-light'}`}>
+      <div className={`py-1${isDarkMode ? 'text-white bg-dark' : 'text-black bg-light'}`}>
         <h2 className="font-bold text-[22px]">{title}</h2>
         <div className="grid grid-cols-2 gap-6 mt-5 md:grid-cols-3 lg:grid-cols-4">
           {[...Array(12)].map((_, index) => (
@@ -55,7 +55,7 @@ function BusinessList({ showAll = false, title }) {
       <h2 className="font-bold text-[22px]">{title}</h2>
 
       {/* Large container for all employees */}
-      <div className={`grid grid-cols-2 gap-6 mt-5 md:grid-cols-3 lg:grid-cols-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} p-6 rounded-lg`}>
+      <div className={`grid grid-cols-2 gap-6 mt-10 md:grid-cols-3 lg:grid-cols-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} p-6 rounded-lg`}>
         {employeesToShow.map((employee, index) => (
           <Link
             to={"/details/" + employee._id}

@@ -312,8 +312,8 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 const BACKEND_URL =
   process.env.NODE_ENV === "production"
-    ? "https://houseservicebackend.onrender.com/"
-    : "http://localhost:5000/";
+    ? "https://servicehouse.onrender.com"
+    : "http://localhost:5000";
 const initialState = {
   user: null,
   token: null,
@@ -321,6 +321,7 @@ const initialState = {
   isAuthenticated: false,
   loading: false,
   error: null,
+  selectedUser: null, // User fetched by ID
   allUsers: [], // To store all fetched users
   role: null, // Track the role
 };
@@ -329,7 +330,7 @@ export const loginWithGoogle = createAsyncThunk(
   async (idToken, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        `${BACKEND_URL}api/google/google-login`,
+        `${BACKEND_URL}/api/google/google-login`,
         { token: idToken } // Sending the token
       );
       return response.data; // Return the server response
@@ -344,7 +345,7 @@ export const getAllUsers = createAsyncThunk(
   "auth/getAllUsers",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${BACKEND_URL}auth/all-users`);
+      const response = await axios.get(`${BACKEND_URL}/auth/all-users`);
       return response.data.user; // Assuming API response has a `user` field
     } catch (error) {
       return rejectWithValue(
@@ -359,7 +360,7 @@ export const loginUser = createAsyncThunk(
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-       `${BACKEND_URL}auth/login`,
+        `${BACKEND_URL}/auth/login`,
         {
           email,
           password,
@@ -381,7 +382,7 @@ export const signupUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        `${BACKEND_URL}auth/signup`,
+        `${BACKEND_URL}/auth/signup`,
         userData,
         {
           headers: {
@@ -395,13 +396,27 @@ export const signupUser = createAsyncThunk(
     }
   }
 );
-
+export const deleteUser = createAsyncThunk(
+  "auth/deleteUser",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `${BACKEND_URL}/auth/delete/${userId}`
+      );
+      return { userId, message: response.data.message };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to delete user"
+      );
+    }
+  }
+);
 // Thunk for logging out user
 export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      await axios.post(`${BACKEND_URL}auth/logout`);
+      await axios.post(`${BACKEND_URL}/auth/logout`);
       return true; // Logout successful
     } catch (error) {
       return rejectWithValue("Failed to logout", error);
@@ -415,7 +430,7 @@ export const getUser = createAsyncThunk(
   async (userId, { rejectWithValue, getState }) => {
     try {
       const { token } = getState().auth; // Get token from the state
-      const response = await axios.get(`${BACKEND_URL}auth/getme`, {
+      const response = await axios.get(`${BACKEND_URL}/auth/getme`, {
         headers: {
           Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
         },
@@ -435,7 +450,7 @@ export const updateUser = createAsyncThunk(
   async (userData, { rejectWithValue, getState }) => {
     try {
       const { token } = getState().auth; // Get token from the state
-      const response = await axios.put(`${BACKEND_URL}auth/me`, userData, {
+      const response = await axios.put(`${BACKEND_URL}/auth/me`, userData, {
         headers: {
           Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
           "Content-Type": "multipart/form-data", // Set the correct header for FormData
@@ -456,7 +471,7 @@ export const getUserById = createAsyncThunk(
   async (id, { rejectWithValue, getState }) => {
     try {
       const { token } = getState().auth; // Get token from the state
-      const response = await axios.get(`${BACKEND_URL}auth/${id}`, {
+      const response = await axios.get(`${BACKEND_URL}/auth/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
         },
@@ -483,15 +498,27 @@ const authSlice = createSlice({
     // clearUser(state) {
     //   state.user = null;
     // },
-    setUser(state, action) {
+    // setUser(state, action) {
+    //   state.user = action.payload.user;
+    //   state.token = action.payload.token;
+    //   state.isAuthenticated = action.payload.isAuthenticated;
+    // },
+    // clearUser(state) {
+    //   state.user = null;
+    //   state.token = null;
+    //   state.isAuthenticated = false;
+    // },
+    setUser: (state, action) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
-      state.isAuthenticated = action.payload.isAuthenticated;
+      state.isAuthenticated = true; // Ensure this updates correctly
+      localStorage.setItem("token", action.payload.token);
     },
-    clearUser(state) {
+    clearUser: (state) => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
+      localStorage.removeItem("token");
     },
   },
   extraReducers: (builder) => {
@@ -506,6 +533,20 @@ const authSlice = createSlice({
         state.allUsers = action.payload;
       })
       .addCase(getAllUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allUsers = state.allUsers.filter(
+          (user) => user.id !== action.payload.userId
+        );
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -601,6 +642,7 @@ const authSlice = createSlice({
       .addCase(getUserById.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.user;
+        state.selectedUser = action.payload;
       })
       .addCase(getUserById.rejected, (state, action) => {
         state.loading = false;

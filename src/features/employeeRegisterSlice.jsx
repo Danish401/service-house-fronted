@@ -252,8 +252,8 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 const BACKEND_URL =
   process.env.NODE_ENV === "production"
-    ? "https://houseservicebackend.onrender.com/"
-    : "http://localhost:5000/";
+    ? "https://servicehouse.onrender.com"
+    : "http://localhost:5000";
 
 // Initial state
 const initialState = {
@@ -291,7 +291,7 @@ export const registerEmployee = createAsyncThunk(
       });
 
       const response = await axios.post(
-        `${BACKEND_URL}api/employees/register`,
+        `${BACKEND_URL}/api/employees/register`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -314,7 +314,7 @@ export const loginEmployee = createAsyncThunk(
   async (loginData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        `${BACKEND_URL}api/employees/login`,
+        `${BACKEND_URL}/api/employees/login`,
         loginData,
         { withCredentials: true }
       );
@@ -337,7 +337,7 @@ export const getAllEmployees = createAsyncThunk(
     try {
       const { token } = getState().employeeRegister;
       const response = await axios.get(
-        `${BACKEND_URL}api/employees/employees`,
+        `${BACKEND_URL}/api/employees/employees`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -360,7 +360,7 @@ export const getEmployeeById = createAsyncThunk(
     try {
       const { token } = getState().employeeRegister;
       const response = await axios.get(
-        `${BACKEND_URL}api/employees/employees/${id}`,
+        `${BACKEND_URL}/api/employees/employees/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -388,7 +388,7 @@ export const updateEmployeeById = createAsyncThunk(
       });
 
       const response = await axios.put(
-        `${BACKEND_URL}api/employees/${id}`,
+        `${BACKEND_URL}/api/employees/${id}`,
         formData,
         {
           headers: {
@@ -405,7 +405,21 @@ export const updateEmployeeById = createAsyncThunk(
     }
   }
 );
-
+export const deleteEmployee = createAsyncThunk(
+  "employeeRegister/deleteEmployee",
+  async (employeeId, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `${BACKEND_URL}/api/employees/delete/${employeeId}`
+      );
+      return { employeeId, message: response.data.message };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to delete employee!"
+      );
+    }
+  }
+);
 // Slice
 const employeeRegisterSlice = createSlice({
   name: "employeeRegister",
@@ -449,7 +463,20 @@ const employeeRegisterSlice = createSlice({
         state.loading = false;
         state.error = action.payload || action.error.message;
       })
-
+      .addCase(deleteEmployee.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteEmployee.fulfilled, (state, action) => {
+        state.loading = false;
+        state.employees = state.employees.filter(
+          (emp) => emp.id !== action.payload.employeeId
+        );
+      })
+      .addCase(deleteEmployee.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(loginEmployee.pending, (state) => {
         state.loading = true;
         state.error = null;
