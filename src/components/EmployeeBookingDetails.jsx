@@ -69,21 +69,7 @@ function EmployeeBookingDetails() {
 
   // Dark mode styles
   const darkModeStyles = isDarkMode ? "bg-[#121212] text-white border-[#000000]" : "bg-white text-black";
-  if (!isAuthenticated) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen text-center">
-        <p className="mb-4 text-lg font-semibold text-indigo-900">
-          Please login to see the details.
-        </p>
-        <Link
-          to="/user/Employee-login"
-          className="px-6 py-2 bg-[#7d66d9] text-white rounded-lg hover:bg-[#6c55c0] transition duration-300"
-        >
-          Login
-        </Link>
-      </div>
-    );
-  }
+  
   return (
     <motion.div
       className={`p-5 mt-8 ${darkModeStyles}`}
