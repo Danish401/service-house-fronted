@@ -177,7 +177,7 @@ function Booking() {
         {["Pending", "booked","Accepted" ].includes(booking.status) && (
           <div className="flex gap-2 mt-4">
             <Link
-             to={`booking/detail/${booking._id}`}
+             to={`/booking/detail/${booking._id}`}
              className="flex items-center justify-center w-auto gap-2 px-4 py-2 text-white transition-all bg-indigo-500 rounded-md shadow-md hover:bg-indigo-600 active:scale-95"
            >
              <SiChatbot className={`text-lg ${isDarkMode ? "text-yellow-500" : "text-indigo-200"}`} />
