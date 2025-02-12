@@ -178,8 +178,8 @@ function App() {
               <Route path="admin-signup" element={<AdminSignUp />} />
             </Route> */}
 
-            <Route path="/dashboard" element={<Dashboard />}>
-              <Route index element={<IndiaMap />} />
+           <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />}>
+<Route index element={<ProtectedRoute element={<IndiaMap />} />} />
               <Route
                 path="data"
                 element={<ProtectedRoute element={<Chart />} />}
