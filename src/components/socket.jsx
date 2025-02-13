@@ -12,7 +12,7 @@ import { io } from "socket.io-client";
 
 const BACKEND_URL =
   process.env.NODE_ENV === "production"
-    ? "https://servicehouse.onrender.com" // ✅ Use live backend in production
+    ? "wss://servicehouse.onrender.com" // ✅ Use live backend in production
     : "http://localhost:5000"; // ✅ Use local backend in development
 
 const socket = io(BACKEND_URL, {
