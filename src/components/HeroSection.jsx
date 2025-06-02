@@ -156,11 +156,8 @@
 // export default HeroSection;
 
 
-
-
-
-
 import React, { useState, useEffect } from "react";
+import ZohoLeadForm from "./ZohoLeadForm";
 import {
   Box,
   Button,
@@ -168,6 +165,7 @@ import {
   Grid,
   Skeleton,
   Dialog,
+  DialogTitle,
   DialogContent,
   IconButton,
 } from "@mui/material";
@@ -181,7 +179,7 @@ const HeroSection = () => {
   const navigate = useNavigate();
   const isDarkMode = useSelector((state) => state.bookings.isDarkMode);
   const [loading, setLoading] = useState(true);
-  const [openForm, setOpenForm] = useState(false); // for Dialog
+  const [openForm, setOpenForm] = useState(false); // controls Dialog open/close
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000);
@@ -332,28 +330,30 @@ const HeroSection = () => {
         </Grid>
       </Container>
 
-      {/* Contact Us Modal */}
+      {/* Contact Form Dialog */}
       <Dialog
         open={openForm}
         onClose={() => setOpenForm(false)}
-        maxWidth="md"
+        maxWidth="sm"
         fullWidth
+        PaperProps={{
+          style: {
+            borderRadius: "20px",
+            padding: "1rem",
+          },
+        }}
       >
+        <DialogTitle>
+          Contact Us
+          <IconButton
+            onClick={() => setOpenForm(false)}
+            sx={{ position: "absolute", right: 8, top: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
         <DialogContent>
-          <Box display="flex" justifyContent="flex-end">
-            <IconButton onClick={() => setOpenForm(false)}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
-          {/* Embed Zoho WebToLead Form */}
-          <iframe
-            title="Contact Form"
-            src="https://crm.zoho.in/crm/WebToLeadForm?xnQsjsdp=c187a97825ba94b944a3a832cf5c4cf694013e3fb06bccddfa06be4dc6cba25c&xmIwtLD=870d63d220795dae3f87a64ebf007e9d5cc5b25aee993ccac5170303d716b809114547c5f930fa6ef173f9ac9d6d505a&actionType=TGVhZHM=&returnURL=null"
-            width="100%"
-            height="600px"
-            frameBorder="0"
-            style={{ border: "none" }}
-          ></iframe>
+          <ZohoLeadForm />
         </DialogContent>
       </Dialog>
     </>
@@ -361,3 +361,4 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+
