@@ -286,15 +286,13 @@ const ZohoLeadForm = () => {
 
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Platform"
+                label="How did you hear about us?"
                 name="Lead Source"
                 select
                 fullWidth
                 defaultValue="-None-"
               >
                 <MenuItem value="-None-">-None-</MenuItem>
-                <MenuItem value="Advertisement">Advertisement</MenuItem>
-                <MenuItem value="Cold Call">Cold Call</MenuItem>
                 <MenuItem value="Employee Referral">Employee Referral</MenuItem>
                 <MenuItem value="External Referral">External Referral</MenuItem>
                 <MenuItem value="Online Store">Online Store</MenuItem>
@@ -309,28 +307,11 @@ const ZohoLeadForm = () => {
                 <MenuItem value="Chat">Chat</MenuItem>
                 <MenuItem value="X (Twitter)">X (Twitter)</MenuItem>
                 <MenuItem value="Facebook">Facebook</MenuItem>
+                <MenuItem value="Facebook">shopify</MenuItem>
               </TextField>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Lead Status"
-                name="Lead Status"
-                select
-                fullWidth
-                defaultValue="-None-"
-              >
-                <MenuItem value="-None-">-None-</MenuItem>
-                <MenuItem value="Attempted to Contact">Attempted to Contact</MenuItem>
-                <MenuItem value="Contact in Future">Contact in Future</MenuItem>
-                <MenuItem value="Contacted">Contacted</MenuItem>
-                <MenuItem value="Junk Lead">Junk Lead</MenuItem>
-                <MenuItem value="Lost Lead">Lost Lead</MenuItem>
-                <MenuItem value="Not Contacted">Not Contacted</MenuItem>
-                <MenuItem value="Pre-Qualified">Pre-Qualified</MenuItem>
-                <MenuItem value="Not Qualified">Not Qualified</MenuItem>
-              </TextField>
-            </Grid>
+           
 
             <Grid item xs={12}>
               <Button
