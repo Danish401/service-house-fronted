@@ -1197,7 +1197,9 @@ import toast from "react-hot-toast";
 import successAnimation from "./success.json";
 import { setUser, getUserById } from "../features/authSlice";
 import { useNavigate } from "react-router-dom";
-
+const BASE_URL = window.location.hostname === "localhost"
+  ? "http://localhost:5000"
+  : "https://servicehouse.onrender.com";
 const plans = [
   {
     title: "Silver Plan",
@@ -1304,10 +1306,10 @@ const PremiumPlans = () => {
     }
 
     try {
-      const { data } = await axios.post(
-        "http://localhost:5000/api/payment/orders",
-        { amount: plan.amount }
-      );
+      try {
+  const { data } = await axios.post(`${BASE_URL}/api/payment/orders`, {
+    amount: plan.amount,
+  });
 
       const options = {
         key: "rzp_test_evc1f58VcUpfqc",
@@ -1330,16 +1332,17 @@ const PremiumPlans = () => {
 
     console.log("✅ Sending verification with userId:", userId);
 
-    const verifyRes = await axios.post(
-      "http://localhost:5000/api/payment/verify",
-      {
-        razorpay_order_id: response.razorpay_order_id,
-        razorpay_payment_id: response.razorpay_payment_id,
-        razorpay_signature: response.razorpay_signature,
-        userId, // ✅ This is now correctly passed
-        plan: plan.title,
-      }
-    );
+  
+try {
+  const verifyRes = await axios.post(`${BASE_URL}/api/payment/verify`, {
+    razorpay_order_id: response.razorpay_order_id,
+    razorpay_payment_id: response.razorpay_payment_id,
+    razorpay_signature: response.razorpay_signature,
+    userId,
+    plan: plan.title,
+  });
+
+
 
     console.log("🎉 Payment verified response:", verifyRes.data);
 
