@@ -32,44 +32,88 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
+  
   const [address1, setAddress1] = useState("");
   const [address2, setAddress2] = useState("");
   const [image, setImage] = useState(null);
-
-  const [nameError, setNameError] = useState(false);
-  const [emailError, setEmailError] = useState(false);
-  const [passwordError, setPasswordError] = useState(false);
+  const [errors, setErrors] = useState({});
+  // const [nameError, setNameError] = useState(false);
+  // const [emailError, setEmailError] = useState(false);
+  // const [passwordError, setPasswordError] = useState(false);
   const { isAuthenticated, loading, error } = useSelector(
     (state) => state.auth
   );
 
+  
+
   const validateInputs = () => {
-    let valid = true;
-
-    if (!name) {
-      setNameError(true);
-      valid = false;
-    } else {
-      setNameError(false);
+    const newErrors = {};
+  
+    // Name Validation
+    if (!name.trim()) {
+      newErrors.name = "Name is required";
+      toast.error("⚠️ Name is required!", { theme: "dark", autoClose: 3000, style: { backgroundColor: "#9b9ef0", color: "#fff" } });
     }
-
-    if (!email) {
-      setEmailError(true);
-      valid = false;
-    } else {
-      setEmailError(false);
+  
+    // Email Validation: Must be lowercase and contain '@'
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+      toast.error("⚠️ Email is required!", { theme: "dark", autoClose: 3000, style: { backgroundColor: "#ffd700", color: "#000" } });
+    } else if (!/^[a-z][a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/.test(email)) {
+      newErrors.email = "Invalid email (must start lowercase & contain '@')";
+      toast.error("❌ Invalid Email! Use lowercase & include '@'", {
+        theme: "colored",
+        autoClose: 3000,
+        style: { backgroundColor: "#4f46e5", color: "#fff" },
+      });
     }
-
-    if (!password) {
-      setPasswordError(true);
-      valid = false;
-    } else {
-      setPasswordError(false);
+  
+    // Password Validation
+    if (!password.trim()) {
+      newErrors.password = "Password is required";
+      toast.error("⚠️ Password is required!", { theme: "dark", autoClose: 3000, style: { backgroundColor: "#9b9ef0", color: "#fff" } });
+    } else if (!/(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password)) {
+      newErrors.password =
+        "Password must be 6+ characters with uppercase, number & special char";
+      toast.error("❌ Weak Password! Add uppercase, number & special char", {
+        theme: "colored",
+        autoClose: 3000,
+        style: { backgroundColor: "#ffd700", color: "#000" },
+      });
     }
-
-    return valid;
+  
+    // Phone Validation: Exactly 10 digits
+    if (!phone.trim()) {
+      newErrors.phone = "Phone number is required";
+      toast.error("⚠️ Phone number is required!", { theme: "dark", autoClose: 3000, style: { backgroundColor: "#4f46e5", color: "#fff" } });
+    } else if (!/^\d{10}$/.test(phone)) {
+      newErrors.phone = "Phone must be 10 digits";
+      toast.error("❌ Invalid Phone! Must be exactly 10 digits", {
+        theme: "colored",
+        autoClose: 3000,
+        style: { backgroundColor: "#abbdf9", color: "#000" },
+      });
+    }
+  
+    // Image Size Validation (Max 3MB)
+    if (image) {
+      const fileSizeInMB = image.size / (1024 * 1024); // Convert bytes to MB
+      if (fileSizeInMB > 3) {
+        newErrors.image = "Image size should not exceed 3MB";
+        toast.error("❌ Image too large! Max size: 3MB", {
+          theme: "colored",
+          autoClose: 3000,
+          style: { backgroundColor: "#abbdf9", color: "#000" },
+        });
+      }
+    }
+  
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
-
+  
+  
+  
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent the form from refreshing the page.
 
@@ -83,6 +127,7 @@ const SignUp = () => {
       email,
       password,
       phone,
+     
       address1,
       address2,
       image, // Optional: Include this if you plan to handle image uploads.
@@ -93,7 +138,11 @@ const SignUp = () => {
       toast.success("Signup successful!");
       navigate("/");
     } catch (err) {
-      toast.error("Signup failed. Please try again.");
+      toast.error(`⚠️ ${err.message}`, {
+        theme: "colored",
+        autoClose: 3000,
+        style: { backgroundColor: "#ff4d4d", color: "#fff" },
+      });
       console.error("Signup error:", err);
     }
   };
@@ -237,8 +286,8 @@ const SignUp = () => {
             margin="normal"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            error={nameError}
-            helperText={nameError && "Full Name is required"}
+            error={!!errors.name}
+          helperText={errors.name}
             sx={{ backgroundColor: isDarkMode ? "#424242" : "#E2DDFE" }}
           />
           <TextField
@@ -248,8 +297,8 @@ const SignUp = () => {
             margin="normal"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            error={emailError}
-            helperText={emailError && "Email is required"}
+            error={!!errors.email}
+          helperText={errors.email}
             sx={{ backgroundColor: isDarkMode ? "#424242" : "#E2DDFE" }}
           />
           <TextField
@@ -260,8 +309,8 @@ const SignUp = () => {
             margin="normal"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            error={passwordError}
-            helperText={passwordError && "Password is required"}
+            error={!!errors.password}
+          helperText={errors.password}
             sx={{ backgroundColor: isDarkMode ? "#424242" : "#E2DDFE" }}
           />
           <TextField
@@ -270,9 +319,12 @@ const SignUp = () => {
             variant="outlined"
             margin="normal"
             value={phone}
+            error={!!errors.phone}
+            helperText={errors.phone}
             onChange={(e) => setPhone(e.target.value)}
             sx={{ backgroundColor: isDarkMode ? "#424242" : "#E2DDFE" }}
           />
+    
           <TextField
             fullWidth
             label="Address Line 1"

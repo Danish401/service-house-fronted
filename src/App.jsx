@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
@@ -28,7 +26,7 @@ import Dashboard from "./Admin/Dashboard";
 import CustomerDetails from "./User/CustomerDetails";
 // import EmployeeRegister from "./User/EmployeeRegister";
 import About from "./components/About";
-import RazorpayPayment from "./components/RazorpayPayment";
+// import RazorpayPayment from "./components/RazorpayPayment";
 import UpdateUserForm from "./components/UpdateUserForm";
 import EmployeeLogin from "./components/EmployeeLogin";
 import ProfileEmployee from "./components/ProfileEmployee";
@@ -45,25 +43,16 @@ import NotFoundPage from "./components/NotFoundPage";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import the ProtectedRoute component
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
-import {
-  
-  getAllUsers,
-  
-} from "../src/features/authSlice";
-import {
-  
-  getAllEmployees,
-  
-} from "../src/features/employeeRegisterSlice";
-import {
-  getAllBookings,
-} from "../src/features/bookingSlice";  // Ensure you're dispatching correct actions
+import { getAllUsers } from "../src/features/authSlice";
+import { getAllEmployees } from "../src/features/employeeRegisterSlice";
+import { getAllBookings } from "../src/features/bookingSlice"; // Ensure you're dispatching correct actions
 import ProfileUpdate from "./Admin/ProfileUpdate";
 import UserDetails from "./Admin/UserDetails";
 import DetailsCustomer from "./Admin/DetailsCustomer";
 import CustomerProfile from "./Admin/CustomerProfile";
 // import EmployeeChatComponent from "./components/EmployeeChatComponent";
 import EmployeeBookingDetails from "./components/EmployeeBookingDetails";
+import PremiumPlans from "./components/PremiumPlans";
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const dispatch = useDispatch();
@@ -111,22 +100,21 @@ function App() {
   };
 
   return (
-    
     <ThemeProvider theme={theme}>
-         <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={3000} />
       <Router>
         <RenderHeader />
-        
 
         <div className={`pt-16 ${isDarkMode ? "dark" : ""}`}>
           <Routes>
             {/* Default Routes */}
             <Route path="/" element={<Home />} />
             <Route path="/businesslist" element={<BusinessListPage />} />
+            <Route path="/premium" element={<PremiumPlans />} />
             <Route path="/about" element={<About />} />
             <Route path="/search/:category" element={<SearchPage />} />
             <Route path="/details/:id" element={<Details />} />
-            <Route path="/razorpay" element={<RazorpayPayment />} />
+            {/* <Route path="/razorpay" element={<RazorpayPayment />} /> */}
             <Route path="/signup" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup-process" element={<StepperSignup />} />
@@ -151,7 +139,7 @@ function App() {
               path="/user/profile-employee"
               element={<ProfileEmployee />}
             />
-             <Route
+            <Route
               path="/user/booking/detail/:bookingId"
               element={<EmployeeBookingDetails />}
             />
@@ -178,8 +166,14 @@ function App() {
               <Route path="admin-signup" element={<AdminSignUp />} />
             </Route> */}
 
-            <Route path="/dashboard" element={<Dashboard />}>
-              <Route index element={<IndiaMap />} />
+            <Route
+              path="/dashboard"
+              element={<ProtectedRoute element={<Dashboard />} />}
+            >
+              <Route
+                index
+                element={<ProtectedRoute element={<IndiaMap />} />}
+              />
               <Route
                 path="data"
                 element={<ProtectedRoute element={<Chart />} />}
@@ -191,11 +185,11 @@ function App() {
               <Route
                 path="add-users"
                 element={<ProtectedRoute element={<AddUsers />} />}
-              /> 
- <Route
+              />
+              <Route
                 path="add-customer"
                 element={<ProtectedRoute element={<AddCustomer />} />}
-              /> 
+              />
               <Route
                 path="all-users"
                 element={<ProtectedRoute element={<UsersList />} />}
@@ -204,12 +198,24 @@ function App() {
                 path="all-customers"
                 element={<ProtectedRoute element={<CustomerList />} />}
               />
-<Route path="user-detail/:id" element={<ProtectedRoute element={<UserDetails />} />} />
-<Route path="customers-detail/:id" element={<ProtectedRoute element={<DetailsCustomer />} />} />
+              <Route
+                path="user-detail/:id"
+                element={<ProtectedRoute element={<UserDetails />} />}
+              />
+              <Route
+                path="customers-detail/:id"
+                element={<ProtectedRoute element={<DetailsCustomer />} />}
+              />
               <Route path="admin-signup" element={<AdminSignUp />} />{" "}
               {/* No protection here */}
-              <Route path="customer-profile/:id" element={<ProtectedRoute element={<CustomerProfile />} />} />
-              <Route path="profile-update/:id" element={<ProtectedRoute element={<ProfileUpdate />} />} />
+              <Route
+                path="customer-profile/:id"
+                element={<ProtectedRoute element={<CustomerProfile />} />}
+              />
+              <Route
+                path="profile-update/:id"
+                element={<ProtectedRoute element={<ProfileUpdate />} />}
+              />
             </Route>
           </Routes>
         </div>

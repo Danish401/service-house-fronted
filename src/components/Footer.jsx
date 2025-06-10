@@ -7,7 +7,14 @@ import { useNavigate } from "react-router-dom";
 const Footer = () => {
   const isDarkMode = useSelector((state) => state.bookings.isDarkMode); // Accessing dark mode state
   const navigate = useNavigate();
-
+  const handleNavigates = (item) => {
+    if (item === "Insights") {
+      navigate("/dashboard"); // Navigate to /dashboard if Insights is clicked
+    } else {
+      // Handle navigation for other items as needed (you can add more routes here)
+      navigate(`/${item.toLowerCase()}`);
+    }
+  };
   // Handle navigation for internal links
   const handleNavigate = () => {
     navigate("/not-found");
@@ -71,26 +78,28 @@ const Footer = () => {
           >
             Solutions
           </Typography>
-          {["Marketing", "Analytics", "Automation", "Commerce", "Insights"].map(
-            (item) => (
-              <Link
-                key={item}
-                onClick={handleNavigate}
-                sx={{
-                  display: "block",
-                  color: isDarkMode ? "#FFDD57" : "#FFFFFF",
-                  marginBottom: "0.5rem",
-                  textDecoration: "none",
-                  cursor: "pointer",
-                  "&:hover": {
-                    color: isDarkMode ? "#E2DDFE" : "#E2DDFE",
-                  },
-                }}
-              >
-                {item}
-              </Link>
-            )
-          )}
+          {["Marketing", "Analytics", "Automation", "Commerce", "Insights"].map((item) => (
+  <Link
+    key={item}
+    onClick={() => handleNavigates(item)}
+    sx={{
+      display: "block",
+      color: isDarkMode ? "#FFDD57" : "#FFFFFF",
+      marginBottom: "0.5rem",
+      textDecoration: "none",
+      cursor: "pointer",
+      "&:hover": {
+        color: isDarkMode ? "#E2DDFE" : "#E2DDFE",
+      },
+    }}
+  >
+    {item}
+  </Link>
+))}
+
+
+
+
         </Grid>
         <Grid item xs={6} sm={3}>
           <Typography

@@ -528,9 +528,9 @@ import logo from "../assets/home2.svg"; // Replace with your logo
 import EngineeringIcon from "@mui/icons-material/Engineering";
 import { FcReadingEbook } from "react-icons/fc";
 import NotificationIcon from "./NotificationIcon";
-import { setUserRole,addMessage } from "../features/chatSlice";
+import { setUserRole, addMessage } from "../features/chatSlice";
 import socket from "./socket"; // Ensure this is your socket instance
-
+import PremiumStatus from "./PremiumStatus"
 function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -542,7 +542,7 @@ function Header() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
- const userRole = "User"
+  const userRole = "User";
   // Backend URL based on environment
   const BACKEND_URL =
     process.env.NODE_ENV === "production"
@@ -557,27 +557,29 @@ function Header() {
   // }, [isAuthenticated]);
   useEffect(() => {
     if (!user) return;
-  
+
     socket.on("receiveMessage", (newMessage) => {
       console.log("📩 Message received in Customer Header:", newMessage);
-  
+
       if (newMessage.senderModel === "Employee") {
         console.log("✅ Employee sent a message!");
-        toast.info(`New message from ${newMessage.senderName}: ${newMessage.message}`, {
-          position: "top-right",
-          autoClose: 3000,
-        });
+        toast.info(
+          `New message from ${newMessage.senderName}: ${newMessage.message}`,
+          {
+            position: "top-right",
+            autoClose: 3000,
+          }
+        );
       }
-  
+
       dispatch(addMessage(newMessage));
     });
-  
+
     return () => {
       socket.off("receiveMessage");
     };
   }, [dispatch, user]);
-  
-  
+
   useEffect(() => {
     if (!isAuthenticated && localStorage.getItem("token")) {
       getUser();
@@ -797,6 +799,13 @@ function Header() {
                 {/* Text Color White */}
               </motion.div>
             </motion.div>
+            <motion.div className="flex items-center px-5 py-3 transition-all rounded-lg  cursor-pointer">
+              {/* Mustard Icon Color */}
+              <span className="text-sm font-semibold text-black">
+                <PremiumStatus/>
+              </span>{" "}
+              {/* Text Color White */}
+            </motion.div>
           </div>
         </div>
 
@@ -810,7 +819,6 @@ function Header() {
             )}
           </IconButton>
           <NotificationIcon userRole={userRole} /> {/* ✅ Pass role */}
-
           {/* Desktop: Show profile dropdown if logged in; otherwise, Get Started */}
           {loggedIn ? (
             <div
@@ -996,7 +1004,6 @@ function Header() {
               </Button>
             </div>
           )}
-
           {/* Hamburger Icon (Mobile) */}
           <div className="flex md:hidden">
             <IconButton onClick={() => setIsMobileNavOpen(true)}>
@@ -1103,7 +1110,7 @@ function Header() {
                   {/* Text Color White */}
                 </motion.div>
               </div>
-              <NotificationIcon userRole={userRole} /> 
+              <NotificationIcon userRole={userRole} />
               {/* Mobile Profile / Get Started */}
               {loggedIn ? (
                 <div className="pt-4 border-t">
