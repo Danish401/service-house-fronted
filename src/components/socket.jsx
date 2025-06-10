@@ -1,8 +1,12 @@
 // import { io } from "socket.io-client";
+<<<<<<< HEAD
 // const BACKEND_URL =
 //   process.env.NODE_ENV === "production"
 //     ? "https://servicehouse.onrender.com"
 //     : "http://localhost:5000";
+=======
+
+>>>>>>> 63c002c3f4f534537ffb0b60b03b5037281e34d6
 // // Ensure the backend URL is correct
 // const socket = io("http://localhost:5000", {
 //   transports: ["websocket", "polling"], // Ensure multiple transport types
@@ -15,7 +19,11 @@ import { io } from "socket.io-client";
 
 const BACKEND_URL =
   process.env.NODE_ENV === "production"
+<<<<<<< HEAD
     ? "https://servicehouse.onrender.com" // ✅ Use live backend in production
+=======
+    ? "wss://servicehouse.onrender.com" // ✅ Use live backend in production
+>>>>>>> 63c002c3f4f534537ffb0b60b03b5037281e34d6
     : "http://localhost:5000"; // ✅ Use local backend in development
 
 const socket = io(BACKEND_URL, {

@@ -315,7 +315,11 @@ function BookingDetail() {
       console.error("Failed to update booking:", error);
     }
   };
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 63c002c3f4f534537ffb0b60b03b5037281e34d6
   if (loading) return <p>Loading booking details...</p>;
   if (error) return <p>Error: {error}</p>;
   if (!booking) return <p>Booking not found.</p>;

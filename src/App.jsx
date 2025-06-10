@@ -166,6 +166,7 @@ function App() {
               <Route path="admin-signup" element={<AdminSignUp />} />
             </Route> */}
 
+<<<<<<< HEAD
             <Route
               path="/dashboard"
               element={<ProtectedRoute element={<Dashboard />} />}
@@ -174,6 +175,10 @@ function App() {
                 index
                 element={<ProtectedRoute element={<IndiaMap />} />}
               />
+=======
+           <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />}>
+<Route index element={<ProtectedRoute element={<IndiaMap />} />} />
+>>>>>>> 63c002c3f4f534537ffb0b60b03b5037281e34d6
               <Route
                 path="data"
                 element={<ProtectedRoute element={<Chart />} />}
