@@ -282,7 +282,7 @@ import DetailsCustomer from "./Admin/DetailsCustomer";
 import CustomerProfile from "./Admin/CustomerProfile";
 import EmployeeBookingDetails from "./components/EmployeeBookingDetails";
 import PremiumPlans from "./components/PremiumPlans";
-
+import Chatbot from "./components/Chatbot";
 import { getAllUsers } from "../src/features/authSlice";
 import { getAllEmployees } from "../src/features/employeeRegisterSlice";
 import { getAllBookings } from "../src/features/bookingSlice";
@@ -426,6 +426,9 @@ function App() {
               <Route path="admin-signup" element={<AdminSignUp />} />
             </Route>
           </Routes>
+        </div>
+         <div className="fixed bottom-6 right-6 z-50">
+          <Chatbot />
         </div>
       </Router>
     </ThemeProvider>
