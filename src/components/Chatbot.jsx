@@ -1,4 +1,5 @@
 
+
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
@@ -6,6 +7,10 @@ import { BsRobot } from "react-icons/bs";
 import { IoMdSend } from "react-icons/io";
 import { FiChevronUp } from "react-icons/fi";
 import robotIcon from "../assets/chatbot.png";
+const BACKEND_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://servicehouse.onrender.com"
+    : "http://localhost:5000";
 export default function Chatbot() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
@@ -39,7 +44,7 @@ export default function Chatbot() {
     setShowSuggestions(false);
 
     try {
-      const res = await axios.post("http://localhost:5000/api/chat", {
+      const res = await axios.post(`${BACKEND_URL}/api/chat`, {
         message: msg,
       });
       const botMsg = { sender: "bot", text: res.data };
@@ -73,7 +78,7 @@ export default function Chatbot() {
             <img
               src={robotIcon}
               alt="Chatbot"
-              className="w-10 h-10 object-contain"
+              className="object-contain w-10 h-10"
             />
           </motion.button>
         )}
@@ -97,7 +102,7 @@ export default function Chatbot() {
               <img
                 src={robotIcon}
                 alt="Chatbot"
-                className="w-8 h-8 object-contain"
+                className="object-contain w-8 h-8"
               />
               House Service Assistant
             </motion.div>
