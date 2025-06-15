@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { motion } from "framer-motion";
@@ -64,11 +65,10 @@ const plans = [
 ];
 
 // Server URL
-const BASE_URL =
-  window.location.hostname === "localhost"
-    ? "http://localhost:5000"
-    : "https://servicehouse.onrender.com";
-
+const BACKEND_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://servicehouse.onrender.com"
+    : "http://localhost:5000";
 const PremiumPlans = () => {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -122,7 +122,7 @@ const PremiumPlans = () => {
     }
 
     try {
-      const { data } = await axios.post(`${BASE_URL}/api/payment/orders`, {
+      const { data } = await axios.post(`${BACKEND_URL}/api/payment/orders`, {
         amount: plan.amount,
       });
 
@@ -141,13 +141,16 @@ const PremiumPlans = () => {
               return;
             }
 
-            const verifyRes = await axios.post(`${BASE_URL}/api/payment/verify`, {
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-              userId,
-              plan: plan.title,
-            });
+            const verifyRes = await axios.post(
+              `${BACKEND_URL}/api/payment/verify`,
+              {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                userId,
+                plan: plan.title,
+              }
+            );
 
             dispatch(
               setUser({
@@ -194,7 +197,7 @@ const PremiumPlans = () => {
 
   return (
     <div className="min-h-screen mt-10 bg-gradient-to-b from-[#0f0f0f] to-[#1a1a1a] p-6 text-white">
-      <div className="text-center mb-12">
+      <div className="mb-12 text-center">
         <motion.h1
           initial={{ y: -30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -208,7 +211,7 @@ const PremiumPlans = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         {plans.map((plan, i) => {
           const isCurrentActive =
             user?.premiumPlan === plan.title &&
@@ -223,12 +226,14 @@ const PremiumPlans = () => {
               transition={{ delay: i * 0.2, duration: 0.6 }}
               className={`rounded-xl p-6 shadow-xl bg-gradient-to-br ${plan.bgColor} border-2 border-white hover:scale-105 transform transition duration-300`}
             >
-              <p className={`text-xs uppercase tracking-widest mb-2 ${plan.textColor}`}>
+              <p
+                className={`text-xs uppercase tracking-widest mb-2 ${plan.textColor}`}
+              >
                 ✨ {plan.title}
               </p>
               <div className={`text-3xl font-extrabold ${plan.textColor}`}>
                 {plan.price}
-                <span className="line-through text-sm ml-3 opacity-70">
+                <span className="ml-3 text-sm line-through opacity-70">
                   {plan.oldPrice}
                 </span>
               </div>
@@ -236,9 +241,12 @@ const PremiumPlans = () => {
                 for {plan.duration}
               </p>
 
-              <ul className="text-left mt-4 space-y-2 font-medium">
+              <ul className="mt-4 space-y-2 font-medium text-left">
                 {plan.perks.map((perk, idx) => (
-                  <li key={idx} className={`flex items-center gap-2 ${plan.textColor}`}>
+                  <li
+                    key={idx}
+                    className={`flex items-center gap-2 ${plan.textColor}`}
+                  >
                     ✅ {perk}
                   </li>
                 ))}
@@ -246,8 +254,10 @@ const PremiumPlans = () => {
 
               {!isAuthenticated ? (
                 <button
-                  onClick={() => toast.error("Please login to buy premium services")}
-                  className="mt-6 w-full py-2 font-semibold rounded-full bg-gray-400 text-white cursor-not-allowed"
+                  onClick={() =>
+                    toast.error("Please login to buy premium services")
+                  }
+                  className="w-full py-2 mt-6 font-semibold text-white bg-gray-400 rounded-full cursor-not-allowed"
                 >
                   Login to Buy Premium
                 </button>
@@ -276,7 +286,7 @@ const PremiumPlans = () => {
       </div>
 
       {(subscribed || showExpiryModal) && expiryDate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black bg-opacity-80">
           <div className="bg-[#1a1a1a] p-6 rounded-2xl text-center shadow-xl relative w-full max-w-md">
             {subscribed && (
               <Lottie options={lottieOptions} height={140} width={140} />
