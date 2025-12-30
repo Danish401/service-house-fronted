@@ -18,7 +18,7 @@ function Home() {
     <div
       className={`min-h-screen ${isDarkMode ? "dark:bg-gray-900" : "bg-white"}`}
     >
-      <div className="mt-8">
+      <div>
         <HeroSection />
         <Hero />
         <CategoryList showAllCategories={false} />

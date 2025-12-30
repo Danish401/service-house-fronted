@@ -1,481 +1,9 @@
-// import React, { useEffect, useState } from "react";
-// import { Box, IconButton, Avatar } from "@mui/material";
-// import { FaBars, FaMoon, FaSun } from "react-icons/fa";
-// import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-// import { useDispatch, useSelector } from "react-redux";
-// import { toggleDarkMode } from "../features/bookingSlice"; // Update path if using themeSlice
-// import { getAllEmployees } from "../features/employeeRegisterSlice";
-// import { getAllUsers, logoutUser } from "../features/authSlice";
-// import { getAllBookings } from "../features/bookingSlice";
-// import { TbLayoutDashboardFilled } from "react-icons/tb";
-// import QueryStatsIcon from "@mui/icons-material/QueryStats";
-// import { FaCalendarCheck, FaUser } from "react-icons/fa";
-// import { GiArchiveRegister } from "react-icons/gi";
-// import { PiUsersDuotone } from "react-icons/pi";
-// import { RiCustomerService2Line } from "react-icons/ri";
-// import { FaUsersGear } from "react-icons/fa6";
-// import { SiGnuprivacyguard } from "react-icons/si";
-// import { AiOutlineLogout } from "react-icons/ai";
-
-// export default function Dashboard() {
-//   const location = useLocation();
-//   const dispatch = useDispatch();
-//   const navigate = useNavigate();
-//   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-  // const { employees } = useSelector((state) => state.employeeRegister);
-  // const { allUsers, user, isAuthenticated } = useSelector((state) => state.auth);
-  // const { allbookings: bookings, isDarkMode } = useSelector((state) => state.bookings);
-
-  // useEffect(() => {
-  //   if (isAuthenticated && user?.role === "admin") {
-  //     dispatch(getAllEmployees());
-  //     dispatch(getAllUsers());
-  //     dispatch(getAllBookings());
-  //   }
-  // }, [dispatch, isAuthenticated, user]);
-
-  // const employeeCount = employees?.length || 0;
-  // const customerCount = allUsers?.length || 0;
-  // const bookingCount = bookings?.length || 0;
-
-  // const handleLogout = () => {
-  //   dispatch(logoutUser());
-  //   localStorage.removeItem("authToken");
-  //   navigate("/dashboard/admin-signup");
-  // };
-
-  // const toggleTheme = () => {
-  //   dispatch(toggleDarkMode());
-  // };
-
-//   return (
-//     <Box className={`flex h-screen ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
-//       {/* Sidebar */}
-//       {isSidebarOpen && (
-//         <Box
-//           className={`fixed top-0 left-0 w-64 h-full text-white ${
-//             isDarkMode
-//               ? "bg-gradient-to-b from-gray-800 to-gray-700"
-//               : "bg-gradient-to-b from-[#7d66d9] to-[#5b5bd6]"
-//           }`}
-//         >
-//           <div className="mb-8 ml-4 mt-4 text-2xl font-bold">House Service</div>
-//           <nav className="space-y-4">
-//             <Link
-//               to="/dashboard"
-//               className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-//                 location.pathname === "/dashboard"
-//                   ? isDarkMode
-//                     ? "bg-gray-700 shadow-lg"
-//                     : "bg-[#5b5bd6] shadow-lg"
-//                   : isDarkMode
-//                   ? "hover:bg-gray-700"
-//                   : "hover:bg-[#5b5bd6]"
-//               }`}
-//             >
-//               <TbLayoutDashboardFilled className="text-xl" />
-//               <span>Dashboard</span>
-//             </Link>
-//             {isAuthenticated && user?.role === "admin" &&(
-//               <>
-//             <Link
-//               to="/dashboard/data"
-//               className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-//                 location.pathname === "/dashboard/data"
-//                   ? "bg-[#5b5bd6] shadow-lg"
-//                   : "hover:bg-[#5b5bd6]"
-//               }`}
-//             >
-//               <QueryStatsIcon className="text-xl" />
-//               <span>Analytics</span>
-//             </Link>
-//             {/* More Links */}
-//             <Link
-//                 to="/dashboard/all-appointements"
-//                 className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-//                   location.pathname === "/dashboard/all-appointements"
-//                     ? "bg-[#5b5bd6] shadow-lg"
-//                     : "hover:bg-[#5b5bd6]"
-//                 }`}
-//               >
-//                 <FaCalendarCheck className="text-xl" />
-//                 <span>All Appointments</span>
-//               </Link>
-//               <Link
-//                 to="/dashboard/add-users"
-//                 className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-//                   location.pathname === "/dashboard/add-users"
-//                     ? "bg-[#5b5bd6] shadow-lg"
-//                     : "hover:bg-[#5b5bd6]"
-//                 }`}
-//               >
-//                 <GiArchiveRegister className="text-xl" />
-//                 <span>Add Users</span>
-//               </Link>
-//               <Link
-//                 to="/dashboard/add-customer"
-//                 className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-//                   location.pathname === "/dashboard/add-customer"
-//                     ? "bg-[#5b5bd6] shadow-lg"
-//                     : "hover:bg-[#5b5bd6]"
-//                 }`}
-//               >
-//                 <GiArchiveRegister className="text-xl" />
-//                 <span>Add Customer</span>
-//               </Link>
-//               <Link
-//                 to="/dashboard/all-users"
-//                 className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-//                   location.pathname === "/dashboard/all-users"
-//                     ? "bg-[#5b5bd6] shadow-lg"
-//                     : "hover:bg-[#5b5bd6]"
-//                 }`}
-//               >
-//                 <PiUsersDuotone className="text-xl" />
-//                 <span>User List</span>
-//               </Link>
-//               <Link
-//                 to="/dashboard/all-customers"
-//                 className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-//                   location.pathname === "/dashboard/all-customers"
-//                     ? "bg-[#5b5bd6] shadow-lg"
-//                     : "hover:bg-[#5b5bd6]"
-//                 }`}
-//               >
-//                 <RiCustomerService2Line className="text-xl" />
-//                 <span>Customer List</span>
-//               </Link>
-//               </>
-//             )}
-//             {/* Logout */}
-//             {isAuthenticated ? (
-// //               // Logout button
-//               <button
-//                 onClick={handleLogout}
-//                 className="flex items-center space-x-3 p-3 w-full text-left rounded-md transition-colors duration-300 hover:bg-[#5b5bd6]"
-//               >
-//                 <AiOutlineLogout className="text-xl" />
-//                 <span>Logout</span>
-//               </button>
-//             )  : (
-//               // Signup visible when not authenticated
-//               <Link
-//                 to="/dashboard/admin-signup"
-//                 className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-//                   location.pathname === "/dashboard/admin-signup"
-//                     ? "bg-[#5b5bd6] shadow-lg"
-//                     : "hover:bg-[#5b5bd6]"
-//                 }`}
-//               >
-//                 <SiGnuprivacyguard className="text-xl" />
-//                 <span>Signup</span>
-//               </Link>
-//             )}
-
-//             {/* Add other links */}
-//           </nav>
-//         </Box>
-//       )}
-
-//       {/* Main Content */}
-//       <Box className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-0"} -mt-16 h-screen overflow-auto`}>
-//         {/* Fixed Header */}
-//         <Box className="sticky top-0 z-10 flex items-center justify-between p-4 shadow-md"
-//           style={{ backgroundColor: isDarkMode ? "#1f2937" : "#fff" }}>
-//           <IconButton
-//             onClick={() => setIsSidebarOpen((prev) => !prev)}
-//             className={isDarkMode ? "text-white" : "text-[#7d66d9]"}
-//           >
-//             <FaBars />
-//           </IconButton>
-//           <div className="text-xl font-bold">House Service Dashboard</div>
-//           <div className="flex items-center space-x-4">
-//             <IconButton onClick={toggleTheme} className={isDarkMode ? "text-white" : "text-gray-600"}>
-//               {isDarkMode ? <FaSun /> : <FaMoon />}
-//             </IconButton>
-//             {isAuthenticated && user && (
-//               <Box className="flex items-center space-x-3">
-//                 <Avatar src={user?.image} alt={user?.name} />
-//                 <Box>
-//                   <div className="font-medium">{user?.name}</div>
-//                   <div className="text-sm text-gray-500">{user?.email}</div>
-//                 </Box>
-//               </Box>
-//             )}
-//           </div>
-//         </Box>
-
-//         {/* Overview Cards */}
-//         <Box className="p-6">
-//   {isAuthenticated && user?.role === "admin" && (
-//     <div className="grid grid-cols-1 gap-6 mb-8 sm:grid-cols-2 md:grid-cols-3">
-//       <div
-//         className={`p-5 text-center rounded-lg shadow-lg ${
-//           isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"
-//         }`}
-//       >
-//         <FaUsersGear
-//           className={`mb-3 text-4xl ${
-//             isDarkMode ? "text-yellow-500" : "text-[#7d66d9]"
-//           }`}
-//         />
-//         <h3 className="text-xl font-semibold">{employeeCount} Employees</h3>
-//       </div>
-//       <div
-//         className={`p-5 text-center rounded-lg shadow-lg ${
-//           isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"
-//         }`}
-//       >
-//         <FaCalendarCheck
-//           className={`mb-3 text-4xl ${
-//             isDarkMode ? "text-yellow-500" : "text-[#7d66d9]"
-//           }`}
-//         />
-//         <h3 className="text-xl font-semibold">{bookingCount} Appointments</h3>
-//       </div>
-//       <div
-//         className={`p-5 text-center rounded-lg shadow-lg ${
-//           isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"
-//         }`}
-//       >
-//         <FaUser
-//           className={`mb-3 text-4xl ${
-//             isDarkMode ? "text-yellow-500" : "text-[#7d66d9]"
-//           }`}
-//         />
-//         <h3 className="text-xl font-semibold">{customerCount} Customers</h3>
-//       </div>
-//     </div>
-//   )}
-//   <Outlet />
-// </Box>
-
-//       </Box>
-//     </Box>
-//   );
-// }
-
-// import React, { useEffect, useState } from "react";
-// import { Box, IconButton, Avatar } from "@mui/material";
-// import { FaBars, FaMoon, FaSun } from "react-icons/fa";
-// import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-// import { useDispatch, useSelector } from "react-redux";
-// import { toggleDarkMode } from "../features/bookingSlice";
-// import { getAllEmployees } from "../features/employeeRegisterSlice";
-// import { getAllUsers, logoutUser } from "../features/authSlice";
-// import { getAllBookings } from "../features/bookingSlice";
-// import { TbLayoutDashboardFilled } from "react-icons/tb";
-// import QueryStatsIcon from "@mui/icons-material/QueryStats";
-// import { FaCalendarCheck, FaUser } from "react-icons/fa";
-// import { GiArchiveRegister } from "react-icons/gi";
-// import { PiUsersDuotone } from "react-icons/pi";
-// import { RiCustomerService2Line } from "react-icons/ri";
-// import { AiOutlineLogout } from "react-icons/ai";
-
-// export default function Dashboard() {
-//   const location = useLocation();
-//   const dispatch = useDispatch();
-//   const navigate = useNavigate();
-//   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-//   const { employees } = useSelector((state) => state.employeeRegister);
-//   const { allUsers, user, isAuthenticated } = useSelector(
-//     (state) => state.auth
-//   );
-//   const { allbookings: bookings, isDarkMode } = useSelector(
-//     (state) => state.bookings
-//   );
-
-//   useEffect(() => {
-//     if (isAuthenticated && user?.role === "admin") {
-//       dispatch(getAllEmployees());
-//       dispatch(getAllUsers());
-//       dispatch(getAllBookings());
-//     }
-//   }, [dispatch, isAuthenticated, user]);
-
-//   const handleLogout = () => {
-//     dispatch(logoutUser());
-//     localStorage.removeItem("authToken");
-//     navigate("/dashboard/admin-signup");
-//   };
-
-//   return (
-//     <Box
-//       className={`flex flex-col h-screen ${
-//         isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"
-//       }`}
-//     >
-//       {/* Fixed Header */}
-//       <Box className="sticky top-0 z-10 flex items-center justify-between p-4 shadow-md bg-white dark:bg-gray-800">
-//         <IconButton
-//           onClick={() => setIsDrawerOpen(!isDrawerOpen)}
-//           className="text-gray-600 dark:text-white"
-//         >
-//           <FaBars />
-//         </IconButton>
-//         <div className="text-xl font-bold">House Service Dashboard</div>
-//         <div className="flex items-center space-x-4">
-//           <IconButton
-//             onClick={() => dispatch(toggleDarkMode())}
-//             className="text-gray-600 dark:text-white"
-//           >
-//             {isDarkMode ? <FaSun /> : <FaMoon />}
-//           </IconButton>
-//           {isAuthenticated && user && (
-//             <Box className="flex items-center space-x-3">
-//               <Avatar src={user?.image} alt={user?.name} />
-//               <Box>
-//                 <div className="font-medium">{user?.name}</div>
-//                 <div className="text-sm text-gray-500">{user?.email}</div>
-//               </Box>
-//             </Box>
-//           )}
-//         </div>
-//       </Box>
-
-//       {/* Sidebar (Hidden on Desktop, Visible on Mobile) */}
-//       <Box
-//         className={`transition-all duration-300 md:hidden ${
-//           isDrawerOpen ? "block" : "block"
-//         } bg-gray-200 dark:bg-gray-700 p-4`}
-//       >
-//         <nav className="space-y-2">
-//           <Link
-//             to="/dashboard"
-//             className="block p-2 rounded-md bg-gray-300 dark:bg-gray-600"
-//           >
-//             Dashboard
-//           </Link>
-//           {isAuthenticated && user?.role === "admin" && (
-//             <>
-//               <Link
-//                 to="/dashboard/data"
-//                 className="block p-2 rounded-md bg-gray-300 dark:bg-gray-600"
-//               >
-//                 Analytics
-//               </Link>
-//               <Link
-//                 to="/dashboard/all-appointements"
-//                 className="block p-2 rounded-md bg-gray-300 dark:bg-gray-600"
-//               >
-//                 All Appointments
-//               </Link>
-//               <Link
-//                 to="/dashboard/add-users"
-//                 className="block p-2 rounded-md bg-gray-300 dark:bg-gray-600"
-//               >
-//                 Add Users
-//               </Link>
-//               <Link
-//                 to="/dashboard/all-users"
-//                 className="block p-2 rounded-md bg-gray-300 dark:bg-gray-600"
-//               >
-//                 User List
-//               </Link>
-//               <Link
-//                 to="/dashboard/all-customers"
-//                 className="block p-2 rounded-md bg-gray-300 dark:bg-gray-600"
-//               >
-//                 Customer List
-//               </Link>
-//             </>
-//           )}
-//           {isAuthenticated ? (
-//             <button
-//               onClick={handleLogout}
-//               className="block w-full p-2 text-left rounded-md bg-red-500 text-white"
-//             >
-//               Logout
-//             </button>
-//           ) : (
-//             <Link
-//               to="/dashboard/admin-signup"
-//               className="block p-2 rounded-md bg-blue-500 text-white"
-//             >
-//               Signup
-//             </Link>
-//           )}
-//         </nav>
-//       </Box>
-
-//       {/* Sidebar for Desktop */}
-//       <Box className="hidden md:flex flex-col w-64 h-full bg-gray-800 text-white p-4">
-//         <div className="mb-4 text-2xl font-bold">House Service</div>
-//         <nav className="space-y-4">
-//           <Link
-//             to="/dashboard"
-//             className="block p-3 rounded-md hover:bg-gray-700"
-//           >
-//             Dashboard
-//           </Link>
-//           {isAuthenticated && user?.role === "admin" && (
-//             <>
-//               <Link
-//                 to="/dashboard/data"
-//                 className="block p-3 rounded-md hover:bg-gray-700"
-//               >
-//                 Analytics
-//               </Link>
-//               <Link
-//                 to="/dashboard/all-appointements"
-//                 className="block p-3 rounded-md hover:bg-gray-700"
-//               >
-//                 All Appointments
-//               </Link>
-//               <Link
-//                 to="/dashboard/add-users"
-//                 className="block p-3 rounded-md hover:bg-gray-700"
-//               >
-//                 Add Users
-//               </Link>
-//               <Link
-//                 to="/dashboard/all-users"
-//                 className="block p-3 rounded-md hover:bg-gray-700"
-//               >
-//                 User List
-//               </Link>
-//               <Link
-//                 to="/dashboard/all-customers"
-//                 className="block p-3 rounded-md hover:bg-gray-700"
-//               >
-//                 Customer List
-//               </Link>
-//             </>
-//           )}
-//           {isAuthenticated ? (
-//             <button
-//               onClick={handleLogout}
-//               className="block w-full p-3 text-left rounded-md bg-red-500"
-//             >
-//               Logout
-//             </button>
-//           ) : (
-//             <Link
-//               to="/dashboard/admin-signup"
-//               className="block p-3 rounded-md bg-blue-500"
-//             >
-//               Signup
-//             </Link>
-//           )}
-//         </nav>
-//       </Box>
-
-//       {/* Main Content */}
-//       <Box className="flex-1 p-6">
-//         <Outlet />
-//       </Box>
-//     </Box>
-//   );
-// }
-
 import React, { useEffect, useState } from "react";
-import { Box, IconButton, Avatar } from "@mui/material";
-import { FaBars, FaMoon, FaSun } from "react-icons/fa";
+import { Box, IconButton, Avatar, Drawer, Tooltip, Badge } from "@mui/material";
+import { FaBars, FaMoon, FaSun, FaTimes } from "react-icons/fa";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleDarkMode } from "../features/bookingSlice"; // Update path if using themeSlice
+import { toggleDarkMode } from "../features/bookingSlice";
 import { getAllEmployees } from "../features/employeeRegisterSlice";
 import { getAllUsers, logoutUser } from "../features/authSlice";
 import { getAllBookings } from "../features/bookingSlice";
@@ -493,9 +21,8 @@ export default function Dashboard() {
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
  
   const { employees } = useSelector((state) => state.employeeRegister);
   const { allUsers, user, isAuthenticated } = useSelector((state) => state.auth);
@@ -525,328 +52,357 @@ export default function Dashboard() {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 1024);
+      if (window.innerWidth >= 1024) {
       setIsDrawerOpen(false);
+      }
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  
+  const isActive = (path) => location.pathname === path;
 
-  return (
-    <Box className={`flex flex-col h-screen ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
-      
-      {/* ✅ Header */}
-      <Box className={`fixed top-0 left-0 w-full z-20 flex items-center justify-between p-4 shadow-md transition-all ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}>
-        <IconButton onClick={() => setIsDrawerOpen(!isDrawerOpen)}>
-          <FaBars />
+  const menuItems = [
+    {
+      path: "/dashboard",
+      icon: <TbLayoutDashboardFilled className="text-xl" />,
+      label: "Dashboard",
+      show: true,
+    },
+    {
+      path: "/dashboard/data",
+      icon: <QueryStatsIcon className="text-xl" />,
+      label: "Analytics",
+      show: isAuthenticated && user?.role === "admin",
+    },
+    {
+      path: "/dashboard/all-appointements",
+      icon: <FaCalendarCheck className="text-xl" />,
+      label: "Appointments",
+      show: isAuthenticated && user?.role === "admin",
+    },
+    {
+      path: "/dashboard/add-users",
+      icon: <GiArchiveRegister className="text-xl" />,
+      label: "Add Users",
+      show: isAuthenticated && user?.role === "admin",
+    },
+    {
+      path: "/dashboard/add-customer",
+      icon: <GiArchiveRegister className="text-xl" />,
+      label: "Add Customer",
+      show: isAuthenticated && user?.role === "admin",
+    },
+    {
+      path: "/dashboard/all-users",
+      icon: <PiUsersDuotone className="text-xl" />,
+      label: "User List",
+      show: isAuthenticated && user?.role === "admin",
+    },
+    {
+      path: "/dashboard/all-customers",
+      icon: <RiCustomerService2Line className="text-xl" />,
+      label: "Customer List",
+      show: isAuthenticated && user?.role === "admin",
+    },
+  ].filter((item) => item.show);
+
+  const SidebarContent = () => (
+    <Box
+      className={`h-full flex flex-col ${
+        isDarkMode
+          ? "bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900"
+          : "bg-gradient-to-b from-indigo-600 via-purple-600 to-indigo-700"
+      } text-white shadow-2xl`}
+    >
+      {/* Logo/Brand */}
+      <Box className="p-6 border-b border-white/10">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-white">FixMate</h1>
+          {isMobile && (
+            <IconButton
+              onClick={() => setIsDrawerOpen(false)}
+              className="text-white hover:bg-white/10"
+              size="small"
+            >
+              <FaTimes />
         </IconButton>
-        <div className="text-xl font-bold">House Service</div>
-        <div className="flex items-center space-x-4">
-        <IconButton onClick={() => dispatch(toggleDarkMode())}>
-          {isDarkMode ? <FaSun /> : <FaMoon />}
-        </IconButton>
-        {isAuthenticated && user && (
-              <Box className="flex items-center space-x-3">
-                <Avatar src={user?.image} alt={user?.name} />
-                <Box>
-                  <div className="font-medium">{user?.name}</div>
-                  <div className="text-sm text-gray-500">{user?.email}</div>
-                </Box>
-              </Box>
             )}
         </div>
-       
       </Box>
 
-      {/* ✅ Mobile Drawer */}
-      {isDrawerOpen && isMobile && (
-        <Box className="absolute top-[60px] mt-2 w-full bg-white shadow-md p-4">
-          <nav className="space-y-4">
+      {/* Navigation Menu */}
+      <Box className="flex-1 overflow-y-auto p-4 space-y-2">
+        {menuItems.map((item) => {
+          const active = isActive(item.path);
+          return (
             <Link
-              to="/dashboard"
-              className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-                location.pathname === "/dashboard"
+              key={item.path}
+              to={item.path}
+              onClick={() => isMobile && setIsDrawerOpen(false)}
+              className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
+                active
                   ? isDarkMode
-                    ? "bg-gray-700 shadow-lg"
-                    : "bg-[#5b5bd6] shadow-lg"
-                  : isDarkMode
-                  ? "hover:bg-gray-700"
-                  : "hover:bg-[#5b5bd6]"
+                    ? "bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg shadow-purple-500/50"
+                    : "bg-white/20 backdrop-blur-sm shadow-lg"
+                  : "hover:bg-white/10"
               }`}
             >
-              <TbLayoutDashboardFilled className="text-xl" />
-              <span>Dashboard</span>
-            </Link>
-            {isAuthenticated && user?.role === "admin" &&(
-              <>
-            <Link
-              to="/dashboard/data"
-              className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-                location.pathname === "/dashboard/data"
-                  ? "bg-[#5b5bd6] shadow-lg"
-                  : "hover:bg-[#5b5bd6]"
-              }`}
-            >
-              <QueryStatsIcon className="text-xl" />
-              <span>Analytics</span>
-            </Link>
-            {/* More Links */}
-            <Link
-                to="/dashboard/all-appointements"
-                className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-                  location.pathname === "/dashboard/all-appointements"
-                    ? "bg-[#5b5bd6] shadow-lg"
-                    : "hover:bg-[#5b5bd6]"
+              <span
+                className={`transition-transform duration-300 ${
+                  active ? "scale-110" : "group-hover:scale-110"
                 }`}
               >
-                <FaCalendarCheck className="text-xl" />
-                <span>All Appointments</span>
+                {item.icon}
+              </span>
+              <span className="font-medium">{item.label}</span>
               </Link>
-              <Link
-                to="/dashboard/add-users"
-                className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-                  location.pathname === "/dashboard/add-users"
-                    ? "bg-[#5b5bd6] shadow-lg"
-                    : "hover:bg-[#5b5bd6]"
-                }`}
-              >
-                <GiArchiveRegister className="text-xl" />
-                <span>Add Users</span>
-              </Link>
-              <Link
-                to="/dashboard/add-customer"
-                className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-                  location.pathname === "/dashboard/add-customer"
-                    ? "bg-[#5b5bd6] shadow-lg"
-                    : "hover:bg-[#5b5bd6]"
-                }`}
-              >
-                <GiArchiveRegister className="text-xl" />
-                <span>Add Customer</span>
-              </Link>
-              <Link
-                to="/dashboard/all-users"
-                className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-                  location.pathname === "/dashboard/all-users"
-                    ? "bg-[#5b5bd6] shadow-lg"
-                    : "hover:bg-[#5b5bd6]"
-                }`}
-              >
-                <PiUsersDuotone className="text-xl" />
-                <span>User List</span>
-              </Link>
-              <Link
-                to="/dashboard/all-customers"
-                className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-                  location.pathname === "/dashboard/all-customers"
-                    ? "bg-[#5b5bd6] shadow-lg"
-                    : "hover:bg-[#5b5bd6]"
-                }`}
-              >
-                <RiCustomerService2Line className="text-xl" />
-                <span>Customer List</span>
-              </Link>
-              </>
-            )}
-            {/* Logout */}
+          );
+        })}
+      </Box>
+
+      {/* User Section / Logout */}
+      <Box className="p-4 border-t border-white/10 space-y-2">
             {isAuthenticated ? (
-//               // Logout button
               <button
                 onClick={handleLogout}
-                className="flex items-center space-x-3 p-3 w-full text-left rounded-md transition-colors duration-300 hover:bg-[#5b5bd6]"
+            className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-white transition-all duration-300 group"
               >
-                <AiOutlineLogout className="text-xl" />
-                <span>Logout</span>
+            <AiOutlineLogout className="text-xl group-hover:translate-x-1 transition-transform" />
+            <span className="font-medium">Logout</span>
               </button>
-            )  : (
-              // Signup visible when not authenticated
+        ) : (
               <Link
                 to="/dashboard/admin-signup"
-                className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-                  location.pathname === "/dashboard/admin-signup"
-                    ? "bg-[#5b5bd6] shadow-lg"
-                    : "hover:bg-[#5b5bd6]"
+            onClick={() => isMobile && setIsDrawerOpen(false)}
+            className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+              isActive("/dashboard/admin-signup")
+                ? "bg-white/20 backdrop-blur-sm shadow-lg"
+                : "bg-green-500/20 hover:bg-green-500/30"
                 }`}
               >
                 <SiGnuprivacyguard className="text-xl" />
-                <span>Signup</span>
+            <span className="font-medium">Signup</span>
               </Link>
             )}
-
-            {/* Add other links */}
-          </nav>
+      </Box>
         </Box>
-      )}
+  );
 
-      {/* ✅ Desktop Sidebar */}
-      <Box className={`hidden md:block fixed mt-2 left-0 top-16 w-64 h-full text-white ${isDarkMode ? "bg-gray-800" : "bg-[#5b5bd6]"}`}>
-      <nav className="space-y-4">
-            <Link
-              to="/dashboard"
-              className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-                location.pathname === "/dashboard"
-                  ? isDarkMode
-                    ? "bg-gray-700 shadow-lg"
-                    : "bg-[#5b5bd6] shadow-lg"
-                  : isDarkMode
-                  ? "hover:bg-gray-700"
-                  : "hover:bg-[#5b5bd6]"
-              }`}
-            >
-              <TbLayoutDashboardFilled className="text-xl" />
-              <span>Dashboard</span>
-            </Link>
-            {isAuthenticated && user?.role === "admin" &&(
-              <>
-            <Link
-              to="/dashboard/data"
-              className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-                location.pathname === "/dashboard/data"
-                  ? "bg-[#5b5bd6] shadow-lg"
-                  : "hover:bg-[#5b5bd6]"
-              }`}
-            >
-              <QueryStatsIcon className="text-xl" />
-              <span>Analytics</span>
-            </Link>
-            {/* More Links */}
-            <Link
-                to="/dashboard/all-appointements"
-                className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-                  location.pathname === "/dashboard/all-appointements"
-                    ? "bg-[#5b5bd6] shadow-lg"
-                    : "hover:bg-[#5b5bd6]"
-                }`}
-              >
-                <FaCalendarCheck className="text-xl" />
-                <span>All Appointments</span>
-              </Link>
-              <Link
-                to="/dashboard/add-users"
-                className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-                  location.pathname === "/dashboard/add-users"
-                    ? "bg-[#5b5bd6] shadow-lg"
-                    : "hover:bg-[#5b5bd6]"
-                }`}
-              >
-                <GiArchiveRegister className="text-xl" />
-                <span>Add Users</span>
-              </Link>
-              <Link
-                to="/dashboard/add-customer"
-                className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-                  location.pathname === "/dashboard/add-customer"
-                    ? "bg-[#5b5bd6] shadow-lg"
-                    : "hover:bg-[#5b5bd6]"
-                }`}
-              >
-                <GiArchiveRegister className="text-xl" />
-                <span>Add Customer</span>
-              </Link>
-              <Link
-                to="/dashboard/all-users"
-                className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-                  location.pathname === "/dashboard/all-users"
-                    ? "bg-[#5b5bd6] shadow-lg"
-                    : "hover:bg-[#5b5bd6]"
-                }`}
-              >
-                <PiUsersDuotone className="text-xl" />
-                <span>User List</span>
-              </Link>
-              <Link
-                to="/dashboard/all-customers"
-                className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-                  location.pathname === "/dashboard/all-customers"
-                    ? "bg-[#5b5bd6] shadow-lg"
-                    : "hover:bg-[#5b5bd6]"
-                }`}
-              >
-                <RiCustomerService2Line className="text-xl" />
-                <span>Customer List</span>
-              </Link>
-              </>
-            )}
-            {/* Logout */}
-            {isAuthenticated ? (
-//               // Logout button
-              <button
-                onClick={handleLogout}
-                className="flex items-center space-x-3 p-3 w-full text-left rounded-md transition-colors duration-300 hover:bg-[#5b5bd6]"
-              >
-                <AiOutlineLogout className="text-xl" />
-                <span>Logout</span>
-              </button>
-            )  : (
-              // Signup visible when not authenticated
-              <Link
-                to="/dashboard/admin-signup"
-                className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-300 ${
-                  location.pathname === "/dashboard/admin-signup"
-                    ? "bg-[#5b5bd6] shadow-lg"
-                    : "hover:bg-[#5b5bd6]"
-                }`}
-              >
-                <SiGnuprivacyguard className="text-xl" />
-                <span>Signup</span>
-              </Link>
-            )}
+  return (
+    <Box
+      className={`flex flex-col h-screen overflow-hidden ${
+        isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
+      }`}
+    >
+      {/* Top Header */}
+      <Box
+        className={`fixed top-0 left-0 right-0 z-30 h-16 flex items-center justify-between px-4 md:px-6 shadow-lg ${
+          isDarkMode
+            ? "bg-gray-800/95 backdrop-blur-md border-b border-gray-700"
+            : "bg-white/95 backdrop-blur-md border-b border-gray-200"
+        }`}
+      >
+        {/* Left: Menu Button (Mobile Only) */}
+        <IconButton
+          onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+          className={`${isDarkMode ? "text-white" : "text-gray-700"} hover:bg-opacity-10 lg:hidden`}
+          size="large"
+        >
+          <FaBars />
+        </IconButton>
+        {/* Spacer for desktop */}
+        <Box className="hidden lg:block w-12" />
 
-            {/* Add other links */}
-          </nav>
+        {/* Center: Title */}
+        <div className="flex-1 text-center">
+          <h1 className="text-lg md:text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+            Admin Dashboard
+          </h1>
+        </div>
+
+        {/* Right: Theme Toggle & User Info */}
+        <Box className="flex items-center space-x-3">
+          <Tooltip title={isDarkMode ? "Light Mode" : "Dark Mode"}>
+            <IconButton
+              onClick={toggleTheme}
+              className={`${isDarkMode ? "text-yellow-400" : "text-gray-700"} hover:bg-opacity-10`}
+            >
+              {isDarkMode ? <FaSun /> : <FaMoon />}
+            </IconButton>
+          </Tooltip>
+
+          {isAuthenticated && user && (
+            <Box className="hidden md:flex items-center space-x-3 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm">
+              <Avatar
+                src={user?.image}
+                alt={user?.name}
+                sx={{ width: 32, height: 32 }}
+                className="ring-2 ring-white/20"
+              />
+              <Box className="hidden lg:block">
+                <div className="text-sm font-semibold">{user?.name}</div>
+                <div className={`text-xs ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
+                  {user?.email}
+                </div>
+              </Box>
+            </Box>
+          )}
+        </Box>
       </Box>
-  
-      {/* ✅ Main Content */}
-      <Box className={`flex-1 ${isMobile ? "ml-0" : "ml-64"} mt-4 p-6`}>
-      {isAuthenticated && user?.role === "admin" && (
-    <div className="grid grid-cols-1 gap-6 mb-8 sm:grid-cols-2 md:grid-cols-3">
-      <div
-        className={`p-5 text-center rounded-lg shadow-lg ${
-          isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"
-        }`}
+
+      {/* Sidebar Drawer for Mobile */}
+      <Drawer
+        anchor="left"
+        open={isDrawerOpen && isMobile}
+        onClose={() => setIsDrawerOpen(false)}
+        PaperProps={{
+          sx: {
+            width: 280,
+            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.3)",
+          },
+        }}
       >
-        <FaUsersGear
-          className={`mb-3 text-4xl ${
-            isDarkMode ? "text-yellow-500" : "text-[#7d66d9]"
-          }`}
-        />
-        <h3 className="text-xl font-semibold">{employeeCount} Employees</h3>
-      </div>
-      <div
-        className={`p-5 text-center rounded-lg shadow-lg ${
-          isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"
-        }`}
+        <SidebarContent />
+      </Drawer>
+
+      {/* Desktop Sidebar */}
+      <Box className="hidden lg:block fixed left-0 top-16 bottom-0 w-64 z-20">
+        <SidebarContent />
+      </Box>
+
+      {/* Main Content Area */}
+      <Box
+        className={`flex-1 pt-16 transition-all duration-300 ${
+          isMobile ? "ml-0" : "lg:ml-64"
+        } overflow-y-auto`}
       >
-        <FaCalendarCheck
-          className={`mb-3 text-4xl ${
-            isDarkMode ? "text-yellow-500" : "text-[#7d66d9]"
-          }`}
-        />
-        <h3 className="text-xl font-semibold">{bookingCount} Appointments</h3>
+        <Box className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
+          {/* Statistics Cards */}
+          {isAuthenticated && user?.role === "admin" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+              {/* Employees Card */}
+              <Box
+                className={`group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
+                  isDarkMode
+                    ? "bg-gradient-to-br from-purple-900/50 to-indigo-900/50 border border-purple-500/20"
+                    : "bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200"
+                }`}
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-400/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-purple-400/20 transition-colors" />
+                <div className="relative z-10">
+                  <div
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${
+                      isDarkMode
+                        ? "bg-purple-500/20 text-purple-300"
+                        : "bg-purple-100 text-purple-600"
+                    }`}
+                  >
+                    <FaUsersGear className="text-2xl" />
+                  </div>
+                  <h3
+                    className={`text-2xl md:text-3xl font-bold mb-2 ${
+                      isDarkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
+                    {employeeCount}
+                  </h3>
+                  <p
+                    className={`text-sm font-medium ${
+                      isDarkMode ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  >
+                    Total Employees
+                  </p>
+                </div>
+              </Box>
+
+              {/* Appointments Card */}
+              <Box
+                className={`group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
+                  isDarkMode
+                    ? "bg-gradient-to-br from-blue-900/50 to-cyan-900/50 border border-blue-500/20"
+                    : "bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200"
+                }`}
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-400/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-blue-400/20 transition-colors" />
+                <div className="relative z-10">
+                  <div
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${
+                      isDarkMode
+                        ? "bg-blue-500/20 text-blue-300"
+                        : "bg-blue-100 text-blue-600"
+                    }`}
+                  >
+                    <FaCalendarCheck className="text-2xl" />
+                  </div>
+                  <h3
+                    className={`text-2xl md:text-3xl font-bold mb-2 ${
+                      isDarkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
+                    {bookingCount}
+                  </h3>
+                  <p
+                    className={`text-sm font-medium ${
+                      isDarkMode ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  >
+                    Appointments
+                  </p>
+                </div>
+              </Box>
+
+              {/* Customers Card */}
+              <Box
+                className={`group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
+                  isDarkMode
+                    ? "bg-gradient-to-br from-emerald-900/50 to-teal-900/50 border border-emerald-500/20"
+                    : "bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200"
+                }`}
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-400/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-emerald-400/20 transition-colors" />
+                <div className="relative z-10">
+                  <div
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${
+                      isDarkMode
+                        ? "bg-emerald-500/20 text-emerald-300"
+                        : "bg-emerald-100 text-emerald-600"
+                    }`}
+                  >
+                    <FaUser className="text-2xl" />
       </div>
-      <div
-        className={`p-5 text-center rounded-lg shadow-lg ${
-          isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"
-        }`}
-      >
-        <FaUser
-          className={`mb-3 text-4xl ${
-            isDarkMode ? "text-yellow-500" : "text-[#7d66d9]"
-          }`}
-        />
-        <h3 className="text-xl font-semibold">{customerCount} Customers</h3>
+                  <h3
+                    className={`text-2xl md:text-3xl font-bold mb-2 ${
+                      isDarkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
+                    {customerCount}
+                  </h3>
+                  <p
+                    className={`text-sm font-medium ${
+                      isDarkMode ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  >
+                    Customers
+                  </p>
       </div>
+              </Box>
     </div>
   )}
-   <div
-    className={`flex-1 w-full rounded-lg p-4 sm:p-6 min-h-[75vh] transition-all duration-300 ${
-      isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
+
+          {/* Outlet Content */}
+          <Box
+            className={`rounded-2xl p-4 md:p-6 lg:p-8 transition-all duration-300 min-h-[calc(100vh-300px)] ${
+              isDarkMode
+                ? "bg-gray-800/50 backdrop-blur-sm border border-gray-700/50"
+                : "bg-white shadow-lg border border-gray-200"
     }`}
   >
     <Outlet />
-  </div>
+          </Box>
+        </Box>
       </Box>
     </Box>
   );

@@ -315,11 +315,7 @@ function BookingDetail() {
       console.error("Failed to update booking:", error);
     }
   };
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> 63c002c3f4f534537ffb0b60b03b5037281e34d6
   if (loading) return <p>Loading booking details...</p>;
   if (error) return <p>Error: {error}</p>;
   if (!booking) return <p>Booking not found.</p>;
@@ -449,14 +445,19 @@ function BookingDetail() {
         </SheetContent>
       </Sheet>
       {/* ✅ Integrate ChatComponent */}
-      <div className="mt-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+        className="mt-8"
+      >
         <ChatComponent
           bookingId={bookingId}
           employeeId={employeeId}
           customerId={customerId}
-          userId={userId} // ✅ Pass userId dynamically
+          userId={userId}
         />
-      </div>
+      </motion.div>
     </motion.div>
   );
 }

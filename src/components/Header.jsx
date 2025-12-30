@@ -519,6 +519,7 @@ import {
 } from "react-icons/md";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import LogoutIcon from "@mui/icons-material/Logout";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
@@ -674,7 +675,7 @@ function Header() {
     <>
       {/* HEADER */}
       <motion.div
-        className={`fixed top-0 left-0 w-full flex justify-between items-center shadow-md z-50 py-2 ${
+        className={`fixed top-0 left-0 w-full flex justify-between items-center shadow-md z-50 py-2 md:py-3 ${
           isDarkMode ? "bg-gray-800 text-white" : "bg-[#e2ddfe] text-[#26292B]"
         }`}
         initial={{ opacity: 0 }}
@@ -682,42 +683,42 @@ function Header() {
         transition={{ duration: 0.5 }}
       >
         {/* Left: Logo & Desktop Navigation */}
-        <div className="flex items-center">
-          <Link to="/" className="ml-4">
+        <div className="flex items-center flex-1 min-w-0">
+          <Link to="/" className="ml-2 md:ml-4 flex-shrink-0">
             <motion.img
               src={logo}
               alt="logo"
               width={100}
               height={30}
-              className="cursor-pointer"
+              className="cursor-pointer w-16 h-auto md:w-24"
               whileHover={{ rotate: 360 }}
               transition={{ duration: 1 }}
             />
           </Link>
           <motion.span
-            className={`flex items-baseline gap-1 cursor-pointer ${
+            className={`hidden sm:flex items-baseline gap-1 cursor-pointer ml-2 ${
               isDarkMode ? "text-white" : "text-gray-800"
             }`}
             whileHover={{ color: "#7F57F1", scale: 1.2 }}
             transition={{ duration: 0.4 }}
           >
             <motion.span
-              className={`text-4xl font-extrabold ${
+              className={`text-2xl md:text-4xl font-extrabold ${
                 isDarkMode ? "text-indigo-400" : "text-gray-800"
               }`}
               whileHover={{ y: -5, color: "#5B5BD6" }}
               transition={{ duration: 0.3 }}
             >
-              A
+              Fix
             </motion.span>
             <motion.span
-              className={`text-2xl font-bold ${
+              className={`text-lg md:text-2xl font-bold ${
                 isDarkMode ? "text-gray-300" : "text-gray-600"
               }`}
               whileHover={{ y: -3, color: "#ABBDF9" }}
               transition={{ duration: 0.3 }}
             >
-              LI.
+              Mate.
             </motion.span>
           </motion.span>
           <div className="items-center hidden gap-8 ml-8 md:flex">
@@ -799,26 +800,26 @@ function Header() {
                 {/* Text Color White */}
               </motion.div>
             </motion.div>
-            <motion.div className="flex items-center px-5 py-3 transition-all rounded-lg  cursor-pointer">
-              {/* Mustard Icon Color */}
-              <span className="text-sm font-semibold text-black">
-                <PremiumStatus/>
-              </span>{" "}
-              {/* Text Color White */}
-            </motion.div>
+            <PremiumStatus/>
           </div>
         </div>
 
         {/* Right: Theme toggle, Profile/Get Started, Hamburger */}
-        <div className="flex items-center gap-4">
-          <IconButton onClick={toggleTheme}>
+        <div className="flex items-center gap-2 md:gap-4 pr-2 md:pr-4">
+          <IconButton 
+            onClick={toggleTheme}
+            className="min-w-[44px] min-h-[44px] touch-manipulation"
+            sx={{ padding: { xs: '10px', md: '12px' } }}
+          >
             {isDarkMode ? (
-              <MdWbSunny className="mr-3 text-white" size={24} />
+              <MdWbSunny className="text-white" size={24} />
             ) : (
               <MdNightlight size={24} />
             )}
           </IconButton>
-          <NotificationIcon userRole={userRole} /> {/* ✅ Pass role */}
+          <div className="hidden sm:block">
+            <NotificationIcon userRole={userRole} /> {/* ✅ Pass role */}
+          </div>
           {/* Desktop: Show profile dropdown if logged in; otherwise, Get Started */}
           {loggedIn ? (
             <div
@@ -1006,9 +1007,13 @@ function Header() {
           )}
           {/* Hamburger Icon (Mobile) */}
           <div className="flex md:hidden">
-            <IconButton onClick={() => setIsMobileNavOpen(true)}>
+            <IconButton 
+              onClick={() => setIsMobileNavOpen(true)}
+              className="min-w-[44px] min-h-[44px] touch-manipulation"
+              sx={{ padding: '10px' }}
+            >
               <MdMenu
-                size={24}
+                size={28}
                 className={isDarkMode ? "text-white" : "text-gray-800"}
               />
             </IconButton>
@@ -1019,42 +1024,63 @@ function Header() {
       {/* MOBILE DRAWER */}
       <AnimatePresence>
         {isMobileNavOpen && (
-          <motion.div
-            className={`fixed top-[60px] left-0 right-0 z-40 shadow-md ${
-              isDarkMode
-                ? "bg-gray-800 text-white"
-                : "bg-[#e2ddfe] text-[#26292B]"
-            }`}
-            initial={{ y: -100 }}
-            animate={{ y: 0 }}
-            exit={{ y: -100 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="flex flex-col p-4 mt-12 space-y-4">
-              {["Home", "About Us"].map((item, index) => (
-                <div
-                  key={index}
-                  className="cursor-pointer"
-                  onClick={() => {
-                    navigate(item === "Home" ? "/" : "/about");
-                    setIsMobileNavOpen(false);
-                  }}
-                >
-                  <h2 className="text-sm hover:text-[#9b9ef0] transition">
-                    {item}
-                  </h2>
-                </div>
-              ))}
+          <>
+            {/* Backdrop */}
+            <motion.div
+              className="fixed inset-0 bg-black/50 z-30"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileNavOpen(false)}
+            />
+            <motion.div
+              className={`fixed top-[60px] left-0 right-0 bottom-0 z-40 shadow-2xl overflow-y-auto ${
+                isDarkMode
+                  ? "bg-gray-800 text-white"
+                  : "bg-[#e2ddfe] text-[#26292B]"
+              }`}
+              initial={{ y: "-100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "-100%" }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              <div className="flex flex-col p-4 md:p-6 space-y-3 max-h-[calc(100vh-60px)]">
+                {["Home", "About Us"].map((item, index) => (
+                  <motion.div
+                    key={index}
+                    className="cursor-pointer min-h-[48px] flex items-center px-4 py-3 rounded-lg active:bg-opacity-70 transition-colors touch-manipulation"
+                    onClick={() => {
+                      navigate(item === "Home" ? "/" : "/about");
+                      setIsMobileNavOpen(false);
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                    style={{
+                      backgroundColor: isDarkMode 
+                        ? "rgba(255,255,255,0.05)" 
+                        : "rgba(0,0,0,0.05)"
+                    }}
+                  >
+                    <h2 className="text-base font-medium hover:text-[#9b9ef0] transition">
+                      {item}
+                    </h2>
+                  </motion.div>
+                ))}
 
               {/* Services Dropdown (Mobile) */}
               <div className="relative">
-                <div
-                  className="flex items-center justify-between cursor-pointer"
+                <motion.div
+                  className="flex items-center justify-between cursor-pointer min-h-[48px] px-4 py-3 rounded-lg active:bg-opacity-70 transition-colors touch-manipulation"
                   onClick={toggleDropdown}
+                  whileTap={{ scale: 0.98 }}
+                  style={{
+                    backgroundColor: isDarkMode 
+                      ? "rgba(255,255,255,0.05)" 
+                      : "rgba(0,0,0,0.05)"
+                  }}
                 >
-                  <h2 className="text-sm">services</h2>
+                  <h2 className="text-base font-medium">Services</h2>
                   {isDropdownOpen ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
-                </div>
+                </motion.div>
                 <AnimatePresence>
                   {isDropdownOpen && (
                     <motion.div
@@ -1068,18 +1094,19 @@ function Header() {
                       exit="closed"
                       variants={dropdownVariants}
                     >
-                      <ul className="p-2">
-                        <li
-                          className="px-4 py-2 hover:bg-[#6e6ade] cursor-pointer flex items-center"
+                      <ul className="p-2 space-y-1">
+                        <motion.li
+                          className="px-4 py-3 rounded-lg hover:bg-[#6e6ade] cursor-pointer flex items-center min-h-[48px] active:bg-opacity-70 transition-colors touch-manipulation"
                           onClick={() => {
                             setIsDropdownOpen(false);
                             navigate("/bookings");
                             setIsMobileNavOpen(false);
                           }}
+                          whileTap={{ scale: 0.98 }}
                         >
-                          <FcReadingEbook className="mr-2" />
-                          Booking
-                        </li>
+                          <FcReadingEbook className="mr-3 text-lg" />
+                          <span className="text-base font-medium">Booking</span>
+                        </motion.li>
                       </ul>
                     </motion.div>
                   )}
@@ -1087,148 +1114,197 @@ function Header() {
               </div>
 
               {/* Workers Link */}
-              <div
-                className="cursor-pointer "
+              <motion.div
+                className="cursor-pointer min-h-[48px]"
                 onClick={() => {
                   navigate("/businesslist");
                   setIsMobileNavOpen(false);
                 }}
+                whileTap={{ scale: 0.98 }}
               >
                 <motion.div
-                  whileHover={{ scale: 1.05, backgroundColor: "#6e6ade" }}
                   whileTap={{ scale: 0.95 }}
-                  className="flex items-center px-5 py-3 transition-all rounded-lg shadow-md cursor-pointer"
-                >
-                  <EngineeringIcon
-                    className="mr-2"
-                    style={{ color: "#FFD700" }}
-                  />{" "}
-                  {/* Mustard Icon Color */}
-                  <span className="text-sm font-semibold text-black">
-                    Workers
-                  </span>{" "}
-                  {/* Text Color White */}
-                </motion.div>
-              </div>
-              <NotificationIcon userRole={userRole} />
-              {/* Mobile Profile / Get Started */}
-              {loggedIn ? (
-                <div className="pt-4 border-t">
-                  <div className="flex items-center">
-                    {user && user.image ? (
-                      <img
-                        src={user.image}
-                        alt="User profile"
-                        className="w-10 h-10 rounded-full border-2 border-[#6e6ade]"
-                      />
-                    ) : (
-                      <MdOutlineAccountBalance
-                        className={isDarkMode ? "text-white" : "text-gray-500"}
-                        size={24}
-                      />
-                    )}
-                    <div className="ml-2">
-                      <p className="text-sm font-bold">{user && user.name}</p>
-                      <p className="text-xs">{user && user.email}</p>
-                    </div>
-                  </div>
-                  <div className="mt-2 space-y-2">
-                    <Button
-                      variant="outlined"
-                      fullWidth
-                      onClick={() => {
-                        navigate("/profile");
-                        setIsMobileNavOpen(false);
-                      }}
-                    >
-                      Profile
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      fullWidth
-                      onClick={() => {
-                        handleLogout();
-                        setIsMobileNavOpen(false);
-                      }}
-                    >
-                      Logout
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setIsModalOpen(true);
-                    setIsMobileNavOpen(false);
+                  className="flex items-center px-4 py-3 transition-all rounded-lg shadow-md cursor-pointer touch-manipulation"
+                  style={{
+                    backgroundColor: isDarkMode 
+                      ? "rgba(110, 106, 222, 0.2)" 
+                      : "rgba(110, 106, 222, 0.1)"
                   }}
                 >
-                  <Button
-                    variant="contained"
-                    className={`flex rounded-full py-0.5 px-3 text-sm transition-colors ${
-                      isDarkMode
-                        ? "bg-[#c5aff1] hover:bg-[#5e4f9e] text-[#e5e5ee]"
-                        : "bg-[#7F57F1] hover:bg-[#7d66d9] text-[#26292B]"
-                    }`}
+                  <EngineeringIcon
+                    className="mr-3"
+                    style={{ color: "#FFD700", fontSize: "24px" }}
+                  />
+                  <span className={`text-base font-semibold ${
+                    isDarkMode ? "text-white" : "text-black"
+                  }`}>
+                    Workers
+                  </span>
+                </motion.div>
+              </motion.div>
+              
+              <div className="sm:hidden py-2">
+                <NotificationIcon userRole={userRole} />
+              </div>
+              {/* Mobile Profile / Get Started */}
+              <div className="pt-4 mt-4 border-t border-opacity-20">
+                {loggedIn ? (
+                  <>
+                    <div className="flex items-center mb-4 px-2">
+                      {user && user.image ? (
+                        <img
+                          src={user.image}
+                          alt="User profile"
+                          className="w-12 h-12 rounded-full border-2 border-[#6e6ade] flex-shrink-0"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full border-2 border-[#6e6ade] flex items-center justify-center flex-shrink-0">
+                          <MdOutlineAccountBalance
+                            className={isDarkMode ? "text-white" : "text-gray-500"}
+                            size={28}
+                          />
+                        </div>
+                      )}
+                      <div className="ml-3 min-w-0 flex-1">
+                        <p className={`text-base font-bold truncate ${
+                          isDarkMode ? "text-white" : "text-gray-900"
+                        }`}>
+                          {user && user.name}
+                        </p>
+                        <p className={`text-sm truncate ${
+                          isDarkMode ? "text-gray-400" : "text-gray-600"
+                        }`}>
+                          {user && user.email}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <Button
+                        variant="outlined"
+                        fullWidth
+                        onClick={() => {
+                          navigate("/profile");
+                          setIsMobileNavOpen(false);
+                        }}
+                        className="min-h-[48px] text-base font-medium touch-manipulation"
+                        sx={{
+                          padding: '12px 24px',
+                          textTransform: 'none',
+                        }}
+                      >
+                        Profile
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        fullWidth
+                        onClick={() => {
+                          handleLogout();
+                          setIsMobileNavOpen(false);
+                        }}
+                        className="min-h-[48px] text-base font-medium touch-manipulation"
+                        sx={{
+                          padding: '12px 24px',
+                          textTransform: 'none',
+                        }}
+                      >
+                        Logout
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <motion.div
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setIsModalOpen(true);
+                      setIsMobileNavOpen(false);
+                    }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    Get Started
-                  </Button>
-                </div>
-              )}
+                    <Button
+                      variant="contained"
+                      fullWidth
+                      className={`min-h-[48px] text-base font-semibold rounded-lg transition-colors touch-manipulation ${
+                        isDarkMode
+                          ? "bg-[#c5aff1] hover:bg-[#5e4f9e] text-[#e5e5ee]"
+                          : "bg-[#7F57F1] hover:bg-[#7d66d9] text-white"
+                      }`}
+                      sx={{
+                        padding: '12px 24px',
+                        textTransform: 'none',
+                      }}
+                    >
+                      Get Started
+                    </Button>
+                  </motion.div>
+                )}
+              </div>
 
               {/* Close Drawer Button */}
-              <div className="flex justify-end">
-                <IconButton onClick={() => setIsMobileNavOpen(false)}>
+              <div className="flex justify-end pt-4 border-t border-opacity-20">
+                <IconButton 
+                  onClick={() => setIsMobileNavOpen(false)}
+                  className="min-w-[48px] min-h-[48px] touch-manipulation"
+                  sx={{ padding: '12px' }}
+                >
                   <MdClose
-                    size={24}
+                    size={28}
                     className={isDarkMode ? "text-white" : "text-gray-800"}
                   />
                 </IconButton>
               </div>
             </div>
           </motion.div>
+          </>
         )}
       </AnimatePresence>
 
       {/* Registration Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-          <div
-            className={`relative p-8 rounded-lg shadow-lg transform transition-all duration-300 ${
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className={`relative w-full max-w-md rounded-lg md:rounded-xl shadow-2xl transform transition-all duration-300 ${
               isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
             }`}
-            style={{ width: "90%", maxWidth: "400px" }}
+            style={{ maxHeight: "90vh", overflowY: "auto" }}
           >
-            <h2 className="text-xl font-bold text-center mb-6 text-[#9B9EF0]">
-              Register as:
-            </h2>
-            <div className="flex flex-col gap-6">
-              <button
-                className="w-full py-3 rounded-lg text-lg font-medium text-white bg-[#9B9EF0] hover:bg-[#7F57F1] transition duration-200 shadow-md hover:shadow-lg"
-                onClick={() => {
-                  setIsModalOpen(false);
-                  navigate("/user");
-                }}
-              >
-                Employee Register
-              </button>
-              <button
-                className="w-full py-3 rounded-lg text-lg font-medium text-white bg-[#E2DDFE] hover:bg-[#9B9EF0] transition duration-200 shadow-md hover:shadow-lg"
-                onClick={() => {
-                  setIsModalOpen(false);
-                  navigate("/signup");
-                }}
-              >
-                Customer Register
-              </button>
+            <div className="p-6 md:p-8">
+              <h2 className="text-xl md:text-2xl font-bold text-center mb-6 text-[#9B9EF0]">
+                Register as:
+              </h2>
+              <div className="flex flex-col gap-4">
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-4 md:py-3 rounded-xl text-base md:text-lg font-semibold text-white bg-[#9B9EF0] hover:bg-[#7F57F1] transition duration-200 shadow-md hover:shadow-lg min-h-[52px] touch-manipulation"
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    navigate("/user");
+                  }}
+                >
+                  Employee Register
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-4 md:py-3 rounded-xl text-base md:text-lg font-semibold text-white bg-[#E2DDFE] hover:bg-[#9B9EF0] transition duration-200 shadow-md hover:shadow-lg min-h-[52px] touch-manipulation"
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    navigate("/signup");
+                  }}
+                >
+                  Customer Register
+                </motion.button>
+              </div>
             </div>
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute text-xl text-gray-400 transition duration-200 top-4 right-4 hover:text-red-500 focus:outline-none"
+              className="absolute text-2xl md:text-xl text-gray-400 transition duration-200 top-4 right-4 hover:text-red-500 focus:outline-none min-w-[44px] min-h-[44px] flex items-center justify-center touch-manipulation"
+              aria-label="Close"
             >
               ✖
             </button>
-          </div>
+          </motion.div>
         </div>
       )}
 

@@ -64,9 +64,6 @@ function EmployeeBookingDetails() {
   const employeeId = booking?.employee?._id;
   const customerId = booking?.customer?._id;
 
-  // ✅ Assume userId is the logged-in user (Replace with actual auth logic)
-  const userId = customerId; // Example: Customer is logged in
-
   // Dark mode styles
   const darkModeStyles = isDarkMode ? "bg-[#121212] text-white border-[#000000]" : "bg-white text-black";
   
@@ -113,14 +110,19 @@ function EmployeeBookingDetails() {
       </div>
 
       {/* ✅ Integrate ChatComponent */}
-      <div className="mt-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+        className="mt-8"
+      >
         <EmployeeChatComponent
           bookingId={bookingId}
           employeeId={employeeId}
           customerId={customerId}
-          userId={userId} // ✅ Pass userId dynamically
+          userId={employeeId}
         />
-      </div>
+      </motion.div>
     </motion.div>
   );
 }

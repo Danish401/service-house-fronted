@@ -457,8 +457,17 @@ export const createBooking = createAsyncThunk(
         body: JSON.stringify(bookingData),
         headers: { "Content-Type": "application/json" },
       });
-      if (!response.ok) throw new Error("Failed to create booking");
+      
       const data = await response.json();
+      
+      if (!response.ok) {
+        // If it's a conflict error (409), return the error message
+        if (response.status === 409) {
+          throw new Error(data.message || "This time slot is already booked. Please choose another time.");
+        }
+        throw new Error(data.message || "Failed to create booking");
+      }
+      
       return data;
     } catch (error) {
       return rejectWithValue(error.message);
