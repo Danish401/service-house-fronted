@@ -22,40 +22,31 @@ export default defineConfig({
   
   // Build optimizations
   build: {
-    // Use esbuild for faster and more reliable minification
+    // Use esbuild with conservative minification settings
     minify: 'esbuild',
-    // Alternative: Use terser with safer options if needed
-    // minify: 'terser',
-    // terserOptions: {
-    //   compress: {
-    //     drop_console: true,
-    //     drop_debugger: true,
-    //     pure_funcs: ['console.log', 'console.info', 'console.debug'],
-    //     passes: 1, // Reduced passes to avoid hoisting issues
-    //     hoist_funs: false, // Disable function hoisting
-    //     hoist_vars: false, // Disable variable hoisting
-    //   },
-    //   format: {
-    //     comments: false,
-    //   },
-    // },
+    // esbuild minification options
+    esbuild: {
+      legalComments: 'none',
+      minifyIdentifiers: true,
+      minifySyntax: true,
+      minifyWhitespace: true,
+      // Keep function names for better error messages
+      keepNames: false,
+    },
     
     // Chunk splitting for better caching
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Vendor chunks - simpler strategy to avoid circular dependencies
+          // Vendor chunks - keep React and MUI together to avoid initialization issues
           if (id.includes('node_modules')) {
-            // Keep React and React-DOM together to avoid initialization issues
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-              return 'vendor-react';
+            // Keep React, React-DOM, Emotion, and MUI together to avoid cross-chunk dependencies
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router') || 
+                id.includes('@emotion') || id.includes('@mui')) {
+              return 'vendor-react-mui';
             }
             if (id.includes('@reduxjs') || id.includes('react-redux')) {
               return 'vendor-redux';
-            }
-            // Keep MUI and Emotion together (they're tightly coupled)
-            if (id.includes('@mui') || id.includes('@emotion')) {
-              return 'vendor-mui';
             }
             if (id.includes('framer-motion')) {
               return 'vendor-motion';
