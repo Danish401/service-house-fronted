@@ -22,40 +22,38 @@ export default defineConfig({
   
   // Build optimizations
   build: {
-    // Enable minification for production
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug'],
-        passes: 2, // Multiple passes for better compression
-      },
-      format: {
-        comments: false, // Remove all comments
-      },
-    },
+    // Use esbuild for faster and more reliable minification
+    minify: 'esbuild',
+    // Alternative: Use terser with safer options if needed
+    // minify: 'terser',
+    // terserOptions: {
+    //   compress: {
+    //     drop_console: true,
+    //     drop_debugger: true,
+    //     pure_funcs: ['console.log', 'console.info', 'console.debug'],
+    //     passes: 1, // Reduced passes to avoid hoisting issues
+    //     hoist_funs: false, // Disable function hoisting
+    //     hoist_vars: false, // Disable variable hoisting
+    //   },
+    //   format: {
+    //     comments: false,
+    //   },
+    // },
     
     // Chunk splitting for better caching
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Vendor chunks
+          // Vendor chunks - simpler strategy to avoid circular dependencies
           if (id.includes('node_modules')) {
-            // React must be in its own chunk and loaded first
-            if (id.includes('react') && !id.includes('react-dom')) {
-              return 'vendor-react-core';
-            }
-            if (id.includes('react-dom')) {
-              return 'vendor-react-dom';
-            }
-            if (id.includes('react-router')) {
-              return 'vendor-react-router';
+            // Keep React and React-DOM together to avoid initialization issues
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'vendor-react';
             }
             if (id.includes('@reduxjs') || id.includes('react-redux')) {
               return 'vendor-redux';
             }
-            // MUI needs React, so keep it separate but after React
+            // Keep MUI and Emotion together (they're tightly coupled)
             if (id.includes('@mui') || id.includes('@emotion')) {
               return 'vendor-mui';
             }
