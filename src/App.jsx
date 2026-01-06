@@ -242,6 +242,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { CircularProgress, Box } from "@mui/material";
+import ErrorBoundary from "./ErrorBoundary.jsx";
 
 // Critical components - load immediately (above the fold)
 import Header from "./components/Header";
@@ -376,81 +377,83 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <ToastContainer position="top-right" autoClose={3000} />
-      <Router>
-        <AdminDataLoader />
-        <RenderHeader />
-        <div className={`pt-16 ${isDarkMode ? "dark" : ""}`}>
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/businesslist" element={<BusinessListPage />} />
-              <Route path="/premium" element={<PremiumPlans />} />
-              <Route path="/search/:category" element={<SearchPage />} />
-              <Route path="/details/:id" element={<Details />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/signup-process" element={<StepperSignup />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/my-bookings" element={<MyBooking />} />
-              <Route path="/profile" element={<UpdateUserForm />} />
-              <Route path="/bookings" element={<Booking />} />
-              <Route path="/not-found" element={<NotFoundPage />} />
-              <Route
-                path="/booking/detail/:bookingId"
-                element={<BookingDetail />}
-              />
-              <Route
-                path="/booking/feedback/:bookingId"
-                element={<FeedbackForm />}
-              />
+      <ErrorBoundary>
+        <Router>
+          <AdminDataLoader />
+          <RenderHeader />
+          <div className={`pt-16 ${isDarkMode ? "dark" : ""}`}>
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                {/* Public Routes - Home is not lazy loaded for immediate render */}
+                <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/businesslist" element={<BusinessListPage />} />
+                <Route path="/premium" element={<PremiumPlans />} />
+                <Route path="/search/:category" element={<SearchPage />} />
+                <Route path="/details/:id" element={<Details />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/signup-process" element={<StepperSignup />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/my-bookings" element={<MyBooking />} />
+                <Route path="/profile" element={<UpdateUserForm />} />
+                <Route path="/bookings" element={<Booking />} />
+                <Route path="/not-found" element={<NotFoundPage />} />
+                <Route
+                  path="/booking/detail/:bookingId"
+                  element={<BookingDetail />}
+                />
+                <Route
+                  path="/booking/feedback/:bookingId"
+                  element={<FeedbackForm />}
+                />
 
-              {/* User Routes */}
-              <Route path="/user" element={<HomeEmployee />}>
-                <Route path="customer-details" element={<CustomerDetails />} />
-              </Route>
-              <Route
-                path="/user/profile-employee"
-                element={<ProfileEmployee />}
-              />
-              <Route
-                path="/user/booking/detail/:bookingId"
-                element={<EmployeeBookingDetails />}
-              />
-              <Route
-                path="/user/bookings/customer"
-                element={<EmployeeBooking />}
-              />
-              <Route
-                path="/user/Employee-register"
-                element={<EmployeeRegisterPage />}
-              />
-              <Route path="/user/Employee-login" element={<EmployeeLogin />} />
+                {/* User Routes */}
+                <Route path="/user" element={<HomeEmployee />}>
+                  <Route path="customer-details" element={<CustomerDetails />} />
+                </Route>
+                <Route
+                  path="/user/profile-employee"
+                  element={<ProfileEmployee />}
+                />
+                <Route
+                  path="/user/booking/detail/:bookingId"
+                  element={<EmployeeBookingDetails />}
+                />
+                <Route
+                  path="/user/bookings/customer"
+                  element={<EmployeeBooking />}
+                />
+                <Route
+                  path="/user/Employee-register"
+                  element={<EmployeeRegisterPage />}
+                />
+                <Route path="/user/Employee-login" element={<EmployeeLogin />} />
 
-              {/* Admin Routes (Protected) */}
-              <Route
-                path="/dashboard"
-                element={<ProtectedRoute element={<Dashboard />} />}
-              >
-                <Route index element={<ProtectedRoute element={<IndiaMap />} />} />
-                <Route path="data" element={<ProtectedRoute element={<Chart />} />} />
-                <Route path="all-appointements" element={<ProtectedRoute element={<AllAppointements />} />} />
-                <Route path="add-users" element={<ProtectedRoute element={<AddUsers />} />} />
-                <Route path="add-customer" element={<ProtectedRoute element={<AddCustomer />} />} />
-                <Route path="all-users" element={<ProtectedRoute element={<UsersList />} />} />
-                <Route path="all-customers" element={<ProtectedRoute element={<CustomerList />} />} />
-                <Route path="user-detail/:id" element={<ProtectedRoute element={<UserDetails />} />} />
-                <Route path="customers-detail/:id" element={<ProtectedRoute element={<DetailsCustomer />} />} />
-                <Route path="customer-profile/:id" element={<ProtectedRoute element={<CustomerProfile />} />} />
-                <Route path="profile-update/:id" element={<ProtectedRoute element={<ProfileUpdate />} />} />
-                <Route path="admin-signup" element={<AdminSignUp />} />
-              </Route>
-            </Routes>
-          </Suspense>
-        </div>
-        <RenderChatbot />
-      </Router>
+                {/* Admin Routes (Protected) */}
+                <Route
+                  path="/dashboard"
+                  element={<ProtectedRoute element={<Dashboard />} />}
+                >
+                  <Route index element={<ProtectedRoute element={<IndiaMap />} />} />
+                  <Route path="data" element={<ProtectedRoute element={<Chart />} />} />
+                  <Route path="all-appointements" element={<ProtectedRoute element={<AllAppointements />} />} />
+                  <Route path="add-users" element={<ProtectedRoute element={<AddUsers />} />} />
+                  <Route path="add-customer" element={<ProtectedRoute element={<AddCustomer />} />} />
+                  <Route path="all-users" element={<ProtectedRoute element={<UsersList />} />} />
+                  <Route path="all-customers" element={<ProtectedRoute element={<CustomerList />} />} />
+                  <Route path="user-detail/:id" element={<ProtectedRoute element={<UserDetails />} />} />
+                  <Route path="customers-detail/:id" element={<ProtectedRoute element={<DetailsCustomer />} />} />
+                  <Route path="customer-profile/:id" element={<ProtectedRoute element={<CustomerProfile />} />} />
+                  <Route path="profile-update/:id" element={<ProtectedRoute element={<ProfileUpdate />} />} />
+                  <Route path="admin-signup" element={<AdminSignUp />} />
+                </Route>
+              </Routes>
+            </Suspense>
+          </div>
+          <RenderChatbot />
+        </Router>
+      </ErrorBoundary>
     </ThemeProvider>
   );
 }
