@@ -42,13 +42,21 @@ export default defineConfig({
         manualChunks: (id) => {
           // Vendor chunks
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-              return 'vendor-react';
+            // React must be in its own chunk and loaded first
+            if (id.includes('react') && !id.includes('react-dom')) {
+              return 'vendor-react-core';
+            }
+            if (id.includes('react-dom')) {
+              return 'vendor-react-dom';
+            }
+            if (id.includes('react-router')) {
+              return 'vendor-react-router';
             }
             if (id.includes('@reduxjs') || id.includes('react-redux')) {
               return 'vendor-redux';
             }
-            if (id.includes('@mui')) {
+            // MUI needs React, so keep it separate but after React
+            if (id.includes('@mui') || id.includes('@emotion')) {
               return 'vendor-mui';
             }
             if (id.includes('framer-motion')) {
@@ -109,11 +117,14 @@ export default defineConfig({
     include: [
       'react',
       'react-dom',
+      'react/jsx-runtime',
       'react-router-dom',
       '@reduxjs/toolkit',
       'react-redux',
       '@mui/material',
       '@mui/icons-material',
+      '@emotion/react',
+      '@emotion/styled',
       'framer-motion',
       'axios',
     ],
@@ -126,6 +137,9 @@ export default defineConfig({
     ],
     // Force optimization of linked packages
     force: true,
+    esbuildOptions: {
+      jsx: 'automatic',
+    },
   },
   
   // CSS preprocessing
