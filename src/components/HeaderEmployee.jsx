@@ -222,7 +222,7 @@ import { useTranslation } from "react-i18next";
 import NotificationIcon from "./NotificationIcon";
 import { Button } from "@mui/material";
 import socket from "./socket"; 
-import { setUserRole ,addMessage} from "../features/chatSlice";
+import { setUserRole } from "../features/chatSlice";
 function HeaderEmployee() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -249,24 +249,21 @@ function HeaderEmployee() {
   useEffect(() => {
     if (!employee) return;
   
+    // Only show toast notifications, don't add messages to state
+    // Messages are handled by EmployeeChatComponent to avoid duplicates
     socket.on("receiveMessage", (newMessage) => {
-      console.log("📩 Message received in Employee Header:", newMessage);
-  
       if (newMessage.senderModel === "User") {
-        console.log("✅ User sent a message!");
-        toast.info(`New message from ${newMessage.senderName}: ${newMessage.message}`, {
+        toast.info(`New message from ${newMessage.senderName || "User"}: ${newMessage.message || "New message"}`, {
           position: "top-right",
           autoClose: 3000,
         });
       }
-  
-      dispatch(addMessage(newMessage));
     });
   
     return () => {
       socket.off("receiveMessage");
     };
-  }, [dispatch, employee]);
+  }, [employee]);
   const userRole ="Employee"
   useEffect(() => {
     if (employeeData?.id) {

@@ -28,19 +28,45 @@ export default defineConfig({
       compress: {
         drop_console: true,
         drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        passes: 2, // Multiple passes for better compression
+      },
+      format: {
+        comments: false, // Remove all comments
       },
     },
     
     // Chunk splitting for better caching
     rollupOptions: {
       output: {
-        manualChunks: {
+        manualChunks: (id) => {
           // Vendor chunks
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-redux': ['@reduxjs/toolkit', 'react-redux'],
-          'vendor-mui': ['@mui/material', '@mui/icons-material'],
-          'vendor-motion': ['framer-motion'],
-          'vendor-utils': ['axios', 'dayjs', 'socket.io-client'],
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'vendor-react';
+            }
+            if (id.includes('@reduxjs') || id.includes('react-redux')) {
+              return 'vendor-redux';
+            }
+            if (id.includes('@mui')) {
+              return 'vendor-mui';
+            }
+            if (id.includes('framer-motion')) {
+              return 'vendor-motion';
+            }
+            if (id.includes('axios') || id.includes('dayjs') || id.includes('socket.io')) {
+              return 'vendor-utils';
+            }
+            // Large libraries get their own chunks
+            if (id.includes('chart.js') || id.includes('react-chartjs')) {
+              return 'vendor-charts';
+            }
+            if (id.includes('@syncfusion')) {
+              return 'vendor-syncfusion';
+            }
+            // Other node_modules
+            return 'vendor-other';
+          }
         },
         // Asset file naming
         chunkFileNames: 'assets/js/[name]-[hash].js',
@@ -70,6 +96,12 @@ export default defineConfig({
     
     // Target modern browsers for smaller bundle
     target: 'es2020',
+    
+    // Enable compression
+    reportCompressedSize: true,
+    
+    // Optimize asset inlining threshold (inline assets smaller than 4kb)
+    assetsInlineLimit: 4096,
   },
   
   // Optimize dependencies
@@ -84,6 +116,13 @@ export default defineConfig({
       '@mui/icons-material',
       'framer-motion',
       'axios',
+    ],
+    // Exclude heavy dependencies that should be lazy loaded
+    exclude: [
+      '@syncfusion/ej2-react-richtexteditor',
+      '@syncfusion/ej2-react-spreadsheet',
+      'chart.js',
+      'react-chartjs-2',
     ],
     // Force optimization of linked packages
     force: true,

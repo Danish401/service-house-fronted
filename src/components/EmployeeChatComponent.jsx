@@ -14,7 +14,7 @@ import {
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import moment from "moment";
-import { Send, Image as ImageIcon, MapPin, MoreVertical } from "lucide-react";
+import { Send, MapPin, MoreVertical } from "lucide-react";
 
 const EmployeeChatComponent = () => {
   const { bookingId } = useParams();
@@ -22,8 +22,6 @@ const EmployeeChatComponent = () => {
   const { messages, loading } = useSelector((state) => state.chat);
   const { bookingDetails } = useSelector((state) => state.bookings);
   const [text, setText] = useState("");
-  const [file, setFile] = useState(null);
-  const [filePreview, setFilePreview] = useState(null);
   const [location, setLocation] = useState(null);
   const [typingUser, setTypingUser] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
@@ -101,6 +99,8 @@ const EmployeeChatComponent = () => {
       dispatch(fetchChatMessages(bookingId));
       socket.emit("joinRoom", { bookingId, userId });
       lastActivityRef.current = Date.now();
+      // Initially assume receiver is online when we join
+      setIsOnline(true);
     }
 
     // Listen for real-time online status updates
@@ -108,6 +108,7 @@ const EmployeeChatComponent = () => {
       if (data && data.userId === receiverId) {
         setIsOnline(true);
         setLastSeen(null);
+        lastActivityRef.current = Date.now();
       }
     };
 
@@ -121,12 +122,19 @@ const EmployeeChatComponent = () => {
     socket.on("userOnline", handleUserOnline);
     socket.on("userOffline", handleUserOffline);
 
-    // Handle incoming messages
+    // Handle incoming messages - use message ID for deduplication
     const handleReceiveMessage = (newMessage) => {
-      const exists = messagesRef.current.some((msg) => msg._id === newMessage._id);
+      // Check if message already exists using _id or a combination of fields
+      const messageId = newMessage._id || `${newMessage.sender}-${newMessage.timestamp}-${newMessage.message?.substring(0, 20)}`;
+      const exists = messagesRef.current.some((msg) => {
+        const existingId = msg._id || `${msg.sender}-${msg.timestamp}-${msg.message?.substring(0, 20)}`;
+        return existingId === messageId || (msg.sender === newMessage.sender && msg.message === newMessage.message && Math.abs(new Date(msg.timestamp) - new Date(newMessage.timestamp)) < 1000);
+      });
+      
       if (!exists) {
         dispatch(addMessage(newMessage));
       }
+      
       // If we receive a message, the sender is definitely online
       if (newMessage.sender === receiverId) {
         lastActivityRef.current = Date.now();
@@ -154,24 +162,12 @@ const EmployeeChatComponent = () => {
       setTypingUser(null);
     });
 
-    // Emit presence when component mounts
-    socket.emit("userPresence", { 
-      userId: receiverId, 
-      bookingId,
-      isOnline: true 
-    });
-
     // Periodic presence check
     const activityInterval = setInterval(() => {
       const timeSinceLastActivity = Date.now() - lastActivityRef.current;
-      if (timeSinceLastActivity > 30000) {
-        setIsOnline((prev) => {
-          if (prev) {
-            setLastSeen(new Date());
-            return false;
-          }
-          return prev;
-        });
+      if (timeSinceLastActivity > 30000 && isOnline) {
+        setIsOnline(false);
+        setLastSeen(new Date());
       }
     }, 5000);
 
@@ -183,7 +179,7 @@ const EmployeeChatComponent = () => {
       socket.off("userOffline", handleUserOffline);
       clearInterval(activityInterval);
     };
-  }, [dispatch, bookingId, userId, receiverId, receiverModel]);
+  }, [dispatch, bookingId, userId, receiverId, receiverModel, isOnline]);
 
   const formatTimestamp = (timestamp) => {
     const now = moment();
@@ -198,7 +194,7 @@ const EmployeeChatComponent = () => {
   };
 
   const handleSend = async () => {
-    if (!text.trim() && !file && !location) return;
+    if (!text.trim() && !location) return;
 
     const messageData = {
       bookingId,
@@ -206,8 +202,8 @@ const EmployeeChatComponent = () => {
       senderModel,
       receiver: receiverId,
       receiverModel,
-      message: text || (location ? "📍 Location shared" : ""),
-      media: file || null,
+      message: text.trim() || (location ? "📍 Location shared" : ""),
+      media: null,
       location: location || null,
       timestamp: new Date().toISOString(),
     };
@@ -217,38 +213,9 @@ const EmployeeChatComponent = () => {
     socket.emit("sendMessage", messageData);
 
     setText("");
-    setFile(null);
-    setFilePreview(null);
     setLocation(null);
     setSuggestions([]);
     inputRef.current?.focus();
-  };
-
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      // Validate file type
-      if (!selectedFile.type.startsWith('image/')) {
-        alert('Please select an image file');
-        return;
-      }
-      
-      // Validate file size (max 5MB)
-      if (selectedFile.size > 5 * 1024 * 1024) {
-        alert('File size should be less than 5MB');
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.readAsDataURL(selectedFile);
-      reader.onloadend = () => {
-        setFile(reader.result);
-        setFilePreview(reader.result);
-      };
-      reader.onerror = () => {
-        alert('Error reading file. Please try again.');
-      };
-    }
   };
 
   const handleShareLocation = () => {
@@ -716,51 +683,6 @@ const EmployeeChatComponent = () => {
         )}
       </AnimatePresence>
 
-      {/* File Preview */}
-      {filePreview && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className={`relative z-10 mx-4 mb-2 p-4 rounded-xl border-2 ${
-            isDarkMode 
-              ? "bg-gray-700/50 border-gray-600" 
-              : "bg-gray-100 border-gray-300"
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            <img
-              src={filePreview}
-              alt="Preview"
-              className="w-20 h-20 object-cover rounded-lg border-2 border-gray-400"
-            />
-            <div className="flex-1">
-              <p className={`text-sm font-semibold ${
-                isDarkMode ? "text-white" : "text-gray-900"
-              }`}>
-                Image Preview
-              </p>
-              <p className={`text-xs ${
-                isDarkMode ? "text-gray-400" : "text-gray-600"
-              }`}>
-                Ready to send
-              </p>
-            </div>
-            <motion.button
-              whileHover={{ scale: 1.1, rotate: 90 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => {
-                setFile(null);
-                setFilePreview(null);
-              }}
-              className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-            >
-              ×
-            </motion.button>
-          </div>
-        </motion.div>
-      )}
-
       {/* Input Section */}
       <motion.div
         initial={{ y: 20, opacity: 0 }}
@@ -786,26 +708,6 @@ const EmployeeChatComponent = () => {
           />
         </div>
 
-        <input
-          type="file"
-          id="fileUpload"
-          className="hidden"
-          accept="image/*"
-          onChange={handleFileChange}
-        />
-        <motion.label
-          htmlFor="fileUpload"
-          whileHover={{ scale: 1.1, rotate: -5 }}
-          whileTap={{ scale: 0.9 }}
-          className={`p-2.5 rounded-full cursor-pointer transition-colors ${
-            isDarkMode
-              ? "hover:bg-gray-700 text-gray-300"
-              : "hover:bg-gray-100 text-gray-600"
-          }`}
-        >
-          <ImageIcon size={22} />
-        </motion.label>
-
         <motion.button
           whileHover={{ scale: 1.1, rotate: -10 }}
           whileTap={{ scale: 0.9 }}
@@ -823,9 +725,9 @@ const EmployeeChatComponent = () => {
           whileHover={{ scale: 1.1, rotate: -15 }}
           whileTap={{ scale: 0.9 }}
           onClick={handleSend}
-          disabled={!text.trim() && !file && !location}
+          disabled={!text.trim() && !location}
           className={`p-3 rounded-full shadow-lg transition-all ${
-            text.trim() || file || location
+            text.trim() || location
               ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-xl"
               : isDarkMode
               ? "bg-gray-700 text-gray-500 cursor-not-allowed"

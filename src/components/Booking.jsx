@@ -4,6 +4,7 @@ import {
   getCustomerBookings,
   updateBookingStatus,
   fetchBookingById,
+  updateBooking,
 } from "../features/bookingSlice";
 import DownloadReceipt from "./DownloadReceipt"; // Adjust path
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./TabsExample";
@@ -18,6 +19,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import profile from "../assets/profile.jpg"; // Import the fallback image
 import { SiChatbot } from "react-icons/si";
 import CoverflowCarousel from "./CoverflowCarousel";
+import { RateReview } from "@mui/icons-material";
 function Booking() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -84,6 +86,7 @@ function Booking() {
       );
     }
   };
+
 
   const colors = {
     booked: "#7d66d9",
@@ -174,7 +177,6 @@ function Booking() {
             <AccessTimeIcon className="mr-2 text-indigo-400" />
             <p>{booking.time}</p>
           </div>
-          <DownloadReceipt bookingId={booking._id} />
         </div>
         {["Pending", "booked", "Accepted"].includes(booking.status) && (
           <div className="flex gap-2 mt-4">
@@ -394,9 +396,58 @@ function Booking() {
                           </div>
                         </div>
 
-                        <div className="mb-4">
-                          <DownloadReceipt bookingId={booking._id} />
-                        </div>
+                        {booking.status === "Completed" && (
+                          <div className="mb-4 space-y-3">
+                            <DownloadReceipt bookingId={booking._id} />
+                            
+                            {/* Feedback Button - Always show for completed bookings */}
+                            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                              <Link
+                                to={`/booking/feedback/${booking._id}`}
+                                className="w-full flex items-center justify-center gap-2 px-6 py-3 font-semibold text-white rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 shadow-lg hover:shadow-xl transition-all duration-300 hover:from-yellow-600 hover:to-orange-600"
+                              >
+                                <RateReview className="text-xl" />
+                                {booking.rating?.value ? "Update Feedback" : "Give Feedback"}
+                              </Link>
+                            </motion.div>
+                            
+                            {/* Show existing rating if available */}
+                            {booking.rating?.value && (
+                              <div className={`p-3 rounded-lg ${
+                                isDarkMode ? "bg-indigo-900/30 border border-indigo-700" : "bg-indigo-50 border border-indigo-200"
+                              }`}>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className={`text-sm font-medium ${
+                                    isDarkMode ? "text-gray-300" : "text-gray-700"
+                                  }`}>Your Rating:</span>
+                                  <div className="flex">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                      <span
+                                        key={star}
+                                        className={`text-lg ${
+                                          star <= booking.rating.value
+                                            ? "text-yellow-400"
+                                            : isDarkMode
+                                            ? "text-gray-600"
+                                            : "text-gray-300"
+                                        }`}
+                                      >
+                                        ★
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                                {booking.rating.comment && (
+                                  <p className={`text-sm mt-1 ${
+                                    isDarkMode ? "text-gray-400" : "text-gray-600"
+                                  }`}>
+                                    "{booking.rating.comment}"
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                         {["Pending", "booked", "Accepted"].includes(
                           booking.status

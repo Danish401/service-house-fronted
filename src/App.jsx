@@ -230,7 +230,7 @@
 
 // export default App;
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense, lazy, useMemo, memo } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -241,76 +241,111 @@ import { useDispatch, useSelector } from "react-redux";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { CircularProgress, Box } from "@mui/material";
 
+// Critical components - load immediately (above the fold)
 import Header from "./components/Header";
 import HeaderEmployee from "./components/HeaderEmployee";
 import Home from "./components/Home";
-import HomeEmployee from "./components/HomeEmployee";
-import SignUp from "./components/SignUp";
-import Login from "./components/Login";
-import ForgotPassword from "./components/ForgotPassword";
-import MyBooking from "./components/MyBooking";
-import BookingDetail from "./components/BookingDetail";
-import Details from "./components/Details";
-import SearchPage from "./components/SearchPage";
-import AddUsers from "./Admin/AddUsers";
-import UsersList from "./Admin/UsersList";
-import AllAppointements from "./Admin/AllAppointements";
-import CustomerList from "./Admin/CustomerList";
-import Dashboard from "./Admin/Dashboard";
-import CustomerDetails from "./User/CustomerDetails";
-import About from "./components/About";
-import UpdateUserForm from "./components/UpdateUserForm";
-import EmployeeLogin from "./components/EmployeeLogin";
-import ProfileEmployee from "./components/ProfileEmployee";
-import Booking from "./components/Booking";
-import EmployeeBooking from "./components/EmployeeBooking";
-import StepperSignup from "./components/StepperSignup";
-import Chart from "./Admin/Chart";
-import IndiaMap from "./Admin/IndiaMap";
-import AdminSignUp from "./Admin/AdminSignUp";
-import AddCustomer from "./Admin/AddCustomer";
-import BusinessListPage from "./components/BusinessListPage";
-import EmployeeRegisterPage from "./components/EmployeeRegisterPage";
-import NotFoundPage from "./components/NotFoundPage";
 import ProtectedRoute from "./components/ProtectedRoute";
-import ProfileUpdate from "./Admin/ProfileUpdate";
-import UserDetails from "./Admin/UserDetails";
-import DetailsCustomer from "./Admin/DetailsCustomer";
-import CustomerProfile from "./Admin/CustomerProfile";
-import EmployeeBookingDetails from "./components/EmployeeBookingDetails";
-import PremiumPlans from "./components/PremiumPlans";
+import Chatbot from "./components/Chatbot";
+
+// Lazy load all other components for code splitting
+const HomeEmployee = lazy(() => import("./components/HomeEmployee"));
+const SignUp = lazy(() => import("./components/SignUp"));
+const Login = lazy(() => import("./components/Login"));
+const ForgotPassword = lazy(() => import("./components/ForgotPassword"));
+const MyBooking = lazy(() => import("./components/MyBooking"));
+const BookingDetail = lazy(() => import("./components/BookingDetail"));
+const Details = lazy(() => import("./components/Details"));
+const SearchPage = lazy(() => import("./components/SearchPage"));
+const About = lazy(() => import("./components/About"));
+const UpdateUserForm = lazy(() => import("./components/UpdateUserForm"));
+const EmployeeLogin = lazy(() => import("./components/EmployeeLogin"));
+const ProfileEmployee = lazy(() => import("./components/ProfileEmployee"));
+const Booking = lazy(() => import("./components/Booking"));
+const EmployeeBooking = lazy(() => import("./components/EmployeeBooking"));
+const StepperSignup = lazy(() => import("./components/StepperSignup"));
+const BusinessListPage = lazy(() => import("./components/BusinessListPage"));
+const EmployeeRegisterPage = lazy(() => import("./components/EmployeeRegisterPage"));
+const NotFoundPage = lazy(() => import("./components/NotFoundPage"));
+const EmployeeBookingDetails = lazy(() => import("./components/EmployeeBookingDetails"));
+const PremiumPlans = lazy(() => import("./components/PremiumPlans"));
+const FeedbackForm = lazy(() => import("./components/FeedbackForm"));
+
+// Admin components - lazy load (heavy components)
+const Dashboard = lazy(() => import("./Admin/Dashboard"));
+const AddUsers = lazy(() => import("./Admin/AddUsers"));
+const UsersList = lazy(() => import("./Admin/UsersList"));
+const AllAppointements = lazy(() => import("./Admin/AllAppointements"));
+const CustomerList = lazy(() => import("./Admin/CustomerList"));
+const Chart = lazy(() => import("./Admin/Chart"));
+const IndiaMap = lazy(() => import("./Admin/IndiaMap"));
+const AdminSignUp = lazy(() => import("./Admin/AdminSignUp"));
+const AddCustomer = lazy(() => import("./Admin/AddCustomer"));
+const ProfileUpdate = lazy(() => import("./Admin/ProfileUpdate"));
+const UserDetails = lazy(() => import("./Admin/UserDetails"));
+const DetailsCustomer = lazy(() => import("./Admin/DetailsCustomer"));
+const CustomerProfile = lazy(() => import("./Admin/CustomerProfile"));
+
+// User components
+const CustomerDetails = lazy(() => import("./User/CustomerDetails"));
 
 import { getAllUsers } from "../src/features/authSlice";
 import { getAllEmployees } from "../src/features/employeeRegisterSlice";
 import { getAllBookings } from "../src/features/bookingSlice";
-import Chatbot from "./components/Chatbot";
 
-function App() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+// Loading fallback component
+const LoadingFallback = () => (
+  <Box
+    display="flex"
+    justifyContent="center"
+    alignItems="center"
+    minHeight="50vh"
+  >
+    <CircularProgress />
+  </Box>
+);
+
+// Component to handle admin data fetching based on route
+const AdminDataLoader = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (isAuthenticated && user?.role === "admin") {
+    // Only fetch admin data when actually needed (when navigating to dashboard)
+    // This prevents loading all data on initial page load
+    if (isAuthenticated && user?.role === "admin" && location.pathname.startsWith("/dashboard")) {
       dispatch(getAllEmployees());
       dispatch(getAllUsers());
       dispatch(getAllBookings());
     }
-  }, [dispatch, isAuthenticated, user]);
+  }, [dispatch, isAuthenticated, user, location.pathname]);
 
-  const theme = createTheme({
-    palette: {
-      mode: isDarkMode ? "dark" : "light",
-    },
-  });
+  return null;
+};
+
+function App() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Memoize theme to prevent recreation on every render
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: isDarkMode ? "dark" : "light",
+        },
+      }),
+    [isDarkMode]
+  );
 
   useEffect(() => {
     document.body.classList.toggle("dark", isDarkMode);
   }, [isDarkMode]);
 
-  // Render dynamic header
-  const RenderHeader = () => {
+  // Render dynamic header - memoized to prevent unnecessary re-renders
+  const RenderHeader = memo(() => {
     const location = useLocation();
     const isDashboardRoute = location.pathname.startsWith("/dashboard");
     const isUserRoute = location.pathname.startsWith("/user");
@@ -322,114 +357,99 @@ function App() {
       );
 
     return <Header isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />;
-  };
+  });
+
+  // Render chatbot only on home page - memoized
+  const RenderChatbot = memo(() => {
+    const location = useLocation();
+    // Only show chatbot on home page
+    if (location.pathname === "/") {
+      return (
+        <div className="fixed bottom-6 right-6 z-50">
+          <Chatbot />
+        </div>
+      );
+    }
+    return null;
+  });
 
   return (
     <ThemeProvider theme={theme}>
       <ToastContainer position="top-right" autoClose={3000} />
       <Router>
+        <AdminDataLoader />
         <RenderHeader />
         <div className={`pt-16 ${isDarkMode ? "dark" : ""}`}>
-          <Routes>
-            {/* Public Routes */}
-            {/* <Route path="/chatbot" element={<Chatbot />} /> */}
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/businesslist" element={<BusinessListPage />} />
-            <Route path="/premium" element={<PremiumPlans />} />
-            <Route path="/search/:category" element={<SearchPage />} />
-            <Route path="/details/:id" element={<Details />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/signup-process" element={<StepperSignup />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/my-bookings" element={<MyBooking />} />
-            <Route path="/profile" element={<UpdateUserForm />} />
-            <Route path="/bookings" element={<Booking />} />
-            <Route path="/not-found" element={<NotFoundPage />} />
-            <Route
-              path="/booking/detail/:bookingId"
-              element={<BookingDetail />}
-            />
+          <Suspense fallback={<LoadingFallback />}>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/businesslist" element={<BusinessListPage />} />
+              <Route path="/premium" element={<PremiumPlans />} />
+              <Route path="/search/:category" element={<SearchPage />} />
+              <Route path="/details/:id" element={<Details />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/signup-process" element={<StepperSignup />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/my-bookings" element={<MyBooking />} />
+              <Route path="/profile" element={<UpdateUserForm />} />
+              <Route path="/bookings" element={<Booking />} />
+              <Route path="/not-found" element={<NotFoundPage />} />
+              <Route
+                path="/booking/detail/:bookingId"
+                element={<BookingDetail />}
+              />
+              <Route
+                path="/booking/feedback/:bookingId"
+                element={<FeedbackForm />}
+              />
 
-            {/* User Routes */}
-            <Route path="/user" element={<HomeEmployee />}>
-              <Route path="customer-details" element={<CustomerDetails />} />
-            </Route>
-            <Route
-              path="/user/profile-employee"
-              element={<ProfileEmployee />}
-            />
-            <Route
-              path="/user/booking/detail/:bookingId"
-              element={<EmployeeBookingDetails />}
-            />
-            <Route
-              path="/user/bookings/customer"
-              element={<EmployeeBooking />}
-            />
-            <Route
-              path="/user/Employee-register"
-              element={<EmployeeRegisterPage />}
-            />
-            <Route path="/user/Employee-login" element={<EmployeeLogin />} />
+              {/* User Routes */}
+              <Route path="/user" element={<HomeEmployee />}>
+                <Route path="customer-details" element={<CustomerDetails />} />
+              </Route>
+              <Route
+                path="/user/profile-employee"
+                element={<ProfileEmployee />}
+              />
+              <Route
+                path="/user/booking/detail/:bookingId"
+                element={<EmployeeBookingDetails />}
+              />
+              <Route
+                path="/user/bookings/customer"
+                element={<EmployeeBooking />}
+              />
+              <Route
+                path="/user/Employee-register"
+                element={<EmployeeRegisterPage />}
+              />
+              <Route path="/user/Employee-login" element={<EmployeeLogin />} />
 
-            {/* Admin Routes (Protected) */}
-            <Route
-              path="/dashboard"
-              element={<ProtectedRoute element={<Dashboard />} />}
-            >
+              {/* Admin Routes (Protected) */}
               <Route
-                index
-                element={<ProtectedRoute element={<IndiaMap />} />}
-              />
-              <Route
-                path="data"
-                element={<ProtectedRoute element={<Chart />} />}
-              />
-              <Route
-                path="all-appointements"
-                element={<ProtectedRoute element={<AllAppointements />} />}
-              />
-              <Route
-                path="add-users"
-                element={<ProtectedRoute element={<AddUsers />} />}
-              />
-              <Route
-                path="add-customer"
-                element={<ProtectedRoute element={<AddCustomer />} />}
-              />
-              <Route
-                path="all-users"
-                element={<ProtectedRoute element={<UsersList />} />}
-              />
-              <Route
-                path="all-customers"
-                element={<ProtectedRoute element={<CustomerList />} />}
-              />
-              <Route
-                path="user-detail/:id"
-                element={<ProtectedRoute element={<UserDetails />} />}
-              />
-              <Route
-                path="customers-detail/:id"
-                element={<ProtectedRoute element={<DetailsCustomer />} />}
-              />
-              <Route
-                path="customer-profile/:id"
-                element={<ProtectedRoute element={<CustomerProfile />} />}
-              />
-              <Route
-                path="profile-update/:id"
-                element={<ProtectedRoute element={<ProfileUpdate />} />}
-              />
-              <Route path="admin-signup" element={<AdminSignUp />} />
-            </Route>
-          </Routes>
+                path="/dashboard"
+                element={<ProtectedRoute element={<Dashboard />} />}
+              >
+                <Route index element={<ProtectedRoute element={<IndiaMap />} />} />
+                <Route path="data" element={<ProtectedRoute element={<Chart />} />} />
+                <Route path="all-appointements" element={<ProtectedRoute element={<AllAppointements />} />} />
+                <Route path="add-users" element={<ProtectedRoute element={<AddUsers />} />} />
+                <Route path="add-customer" element={<ProtectedRoute element={<AddCustomer />} />} />
+                <Route path="all-users" element={<ProtectedRoute element={<UsersList />} />} />
+                <Route path="all-customers" element={<ProtectedRoute element={<CustomerList />} />} />
+                <Route path="user-detail/:id" element={<ProtectedRoute element={<UserDetails />} />} />
+                <Route path="customers-detail/:id" element={<ProtectedRoute element={<DetailsCustomer />} />} />
+                <Route path="customer-profile/:id" element={<ProtectedRoute element={<CustomerProfile />} />} />
+                <Route path="profile-update/:id" element={<ProtectedRoute element={<ProfileUpdate />} />} />
+                <Route path="admin-signup" element={<AdminSignUp />} />
+              </Route>
+            </Routes>
+          </Suspense>
         </div>
-         <div className="fixed bottom-6 right-6 z-50">
-          <Chatbot />
-        </div>
+        <RenderChatbot />
       </Router>
     </ThemeProvider>
   );

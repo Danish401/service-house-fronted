@@ -263,7 +263,6 @@ const initialState = {
     password: "",
     category: "",
     speciality: "",
-    education: "",
     address1: "",
     address2: "",
     experience: "",

@@ -48,10 +48,10 @@ function SearchPage() {
   }
 
   return (
-    <div className={`flex gap-6 p-6 mt-8 ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"}`}>
+    <div className={`flex flex-col md:flex-row gap-4 md:gap-6 p-3 md:p-6 mt-4 md:mt-8 ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"}`}>
       {/* Left section - Category List */}
-      <div className={`w-1/4 p-4 ${isDarkMode ? "bg-gray-800" : "bg-white"} border border-gray-300 rounded-lg shadow-lg`}>
-        <h2 className="mb-4 text-lg font-semibold text-[#7D66D9]">Categories</h2>
+      <div className={`w-full md:w-1/4 p-3 md:p-4 ${isDarkMode ? "bg-gray-800" : "bg-white"} border border-gray-300 rounded-lg shadow-lg`}>
+        <h2 className="mb-3 md:mb-4 text-base md:text-lg font-semibold text-[#7D66D9]">Categories</h2>
         <CategoryList
           selectedCategory={selectedCategory}
           onSelectCategory={handleCategorySelect}
@@ -60,10 +60,10 @@ function SearchPage() {
       </div>
 
       {/* Right section - Filtered results */}
-      <div className="flex-1 p-4">
-        <div className="mt-5">
-          <h2 className="font-bold text-[22px]">{selectedCategory}</h2>
-          <div className="grid grid-cols-2 gap-6 mt-5 md:grid-cols-3 lg:grid-cols-4">
+      <div className="flex-1 p-2 md:p-4">
+        <div className="mt-2 md:mt-5">
+          <h2 className="font-bold text-lg md:text-[22px]">{selectedCategory}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mt-3 md:mt-5 lg:grid-cols-3 xl:grid-cols-4">
             {filteredData.length > 0
               ? filteredData.map((employee, index) => (
                   <Link
@@ -76,20 +76,22 @@ function SearchPage() {
                       alt={employee.name}
                       width={500}
                       height={200}
-                      className="h-[150px] md:h-[200px] object-cover rounded-lg"
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-[150px] sm:h-[180px] md:h-[200px] object-cover rounded-lg"
                     />
-                    <div className="flex flex-col items-baseline gap-1 p-3">
-                      <h2 className="p-1 bg-purple-200 text-primary rounded-full px-2 text-[12px]">
+                    <div className="flex flex-col items-baseline gap-1 p-2 md:p-3">
+                      <h2 className="p-1 bg-purple-200 text-primary rounded-full px-2 text-[10px] md:text-[12px]">
                         {employee.category || "Unknown Category"}
                       </h2>
-                      <h2 className="text-lg font-bold">{employee.name}</h2>
-                      <h2 className="text-sm text-gray-500">
+                      <h2 className="text-base md:text-lg font-bold">{employee.name}</h2>
+                      <h2 className="text-xs md:text-sm text-gray-500 truncate w-full">
                         {employee.address1 || "No Address Provided"}
                       </h2>
-                      <h2 className="text-sm text-gray-500">
+                      <h2 className="text-xs md:text-sm text-gray-500 truncate w-full">
                         {employee.address2 || "No Address Provided"}
                       </h2>
-                      <button className="mt-3 rounded-lg bg-[#7D66D9] text-white px-4 py-2">
+                      <button className="mt-2 md:mt-3 rounded-lg bg-[#7D66D9] text-white px-3 md:px-4 py-1.5 md:py-2 text-sm md:text-base w-full md:w-auto">
                         Book Now
                       </button>
                     </div>
@@ -98,7 +100,7 @@ function SearchPage() {
               : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => (
                   <div
                     key={index}
-                    className="w-full h-[300px] bg-slate-200 rounded-lg animate-pulse"
+                    className="w-full h-[250px] md:h-[300px] bg-slate-200 rounded-lg animate-pulse"
                   ></div>
                 ))}
           </div>

@@ -354,7 +354,11 @@ const BookingCard = ({ booking, onComplete, onUpdateStatus }) => {
             <AccessTimeIcon className="text-indigo-400" />
             <p>{booking.time}</p>
           </div>
-          <DownloadReceipt bookingId={booking._id} />
+          {booking.status === "Completed" && (
+            <div className="mt-2">
+              <DownloadReceipt bookingId={booking._id} />
+            </div>
+          )}
         </div>
         {booking.status === "Pending" && (
           <div className="flex gap-2 mt-4">

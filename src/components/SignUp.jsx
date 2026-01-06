@@ -37,6 +37,136 @@ const SignUp = () => {
   const [address2, setAddress2] = useState("");
   const [image, setImage] = useState(null);
   const [errors, setErrors] = useState({});
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+
+  // Get current location using GPS and fill Address 1
+  const handleGetCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser", {
+        theme: "colored",
+        autoClose: 3000,
+        style: { backgroundColor: "#ff4d4d", color: "#fff" },
+      });
+      return;
+    }
+
+    setIsLoadingLocation(true);
+    toast.info("Requesting location access... Please allow GPS access when prompted.", {
+      theme: "dark",
+      autoClose: 3000,
+    });
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        
+        try {
+          // Use free Nominatim API for reverse geocoding
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
+            {
+              headers: {
+                'User-Agent': 'HouseServiceApp/1.0'
+              }
+            }
+          );
+          
+          const data = await response.json();
+          
+          if (data && data.display_name) {
+            setAddress1(data.display_name);
+            toast.success("Address captured successfully!", {
+              theme: "colored",
+              autoClose: 3000,
+              style: { backgroundColor: "#4caf50", color: "#fff" },
+            });
+          } else {
+            // Fallback: Use coordinates if address not found
+            setAddress1(`${latitude}, ${longitude}`);
+            toast.warning("Could not get full address. Using coordinates.", {
+              theme: "colored",
+              autoClose: 3000,
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching address:", error);
+          toast.error("Failed to get address. Please enter manually.", {
+            theme: "colored",
+            autoClose: 3000,
+            style: { backgroundColor: "#ff4d4d", color: "#fff" },
+          });
+        } finally {
+          setIsLoadingLocation(false);
+        }
+      },
+      (error) => {
+        setIsLoadingLocation(false);
+        let errorMessage = "Failed to get your location.";
+        
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = "Location access denied. Please enable GPS in your browser settings.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = "Location information unavailable.";
+            break;
+          case error.TIMEOUT:
+            errorMessage = "Location request timed out. Please try again.";
+            break;
+          default:
+            errorMessage = "An unknown error occurred.";
+            break;
+        }
+        
+        toast.error(errorMessage, {
+          theme: "colored",
+          autoClose: 4000,
+          style: { backgroundColor: "#ff4d4d", color: "#fff" },
+        });
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  };
+
+  // Real-time validation on blur
+  const validateField = (fieldName, value) => {
+    const newErrors = { ...errors };
+    
+    switch (fieldName) {
+      case "email":
+        if (!value.trim()) {
+          newErrors.email = "Email is required";
+        } else if (!/^[a-z][a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/.test(value)) {
+          newErrors.email = "Invalid email format";
+        } else {
+          delete newErrors.email;
+        }
+        break;
+      case "password":
+        if (!value.trim()) {
+          newErrors.password = "Password is required";
+        } else if (value.length < 6) {
+          newErrors.password = "Password must be at least 6 characters";
+        } else if (!/(?=.*[A-Z])/.test(value)) {
+          newErrors.password = "Password must contain at least one uppercase letter";
+        } else if (!/(?=.*\d)/.test(value)) {
+          newErrors.password = "Password must contain at least one number";
+        } else if (!/(?=.*[@$!%*?&])/.test(value)) {
+          newErrors.password = "Password must contain at least one special character";
+        } else {
+          delete newErrors.password;
+        }
+        break;
+      default:
+        break;
+    }
+    
+    setErrors(newErrors);
+  };
   // const [nameError, setNameError] = useState(false);
   // const [emailError, setEmailError] = useState(false);
   // const [passwordError, setPasswordError] = useState(false);
@@ -55,27 +185,61 @@ const SignUp = () => {
       toast.error("⚠️ Name is required!", { theme: "dark", autoClose: 3000, style: { backgroundColor: "#9b9ef0", color: "#fff" } });
     }
   
-    // Email Validation: Must be lowercase and contain '@'
+    // Email Validation: Must be lowercase and contain '@' - MANDATORY
     if (!email.trim()) {
       newErrors.email = "Email is required";
       toast.error("⚠️ Email is required!", { theme: "dark", autoClose: 3000, style: { backgroundColor: "#ffd700", color: "#000" } });
     } else if (!/^[a-z][a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/.test(email)) {
-      newErrors.email = "Invalid email (must start lowercase & contain '@')";
+      newErrors.email = "Invalid email format (must start lowercase & contain '@')";
       toast.error("❌ Invalid Email! Use lowercase & include '@'", {
+        theme: "colored",
+        autoClose: 3000,
+        style: { backgroundColor: "#4f46e5", color: "#fff" },
+      });
+    } else if (!email.includes("@")) {
+      newErrors.email = "Email must contain '@' symbol";
+      toast.error("❌ Email must contain '@' symbol", {
+        theme: "colored",
+        autoClose: 3000,
+        style: { backgroundColor: "#4f46e5", color: "#fff" },
+      });
+    } else if (!email.includes(".")) {
+      newErrors.email = "Email must contain a domain (e.g., .com, .org)";
+      toast.error("❌ Invalid email domain", {
         theme: "colored",
         autoClose: 3000,
         style: { backgroundColor: "#4f46e5", color: "#fff" },
       });
     }
   
-    // Password Validation
+    // Password Validation - MANDATORY
     if (!password.trim()) {
       newErrors.password = "Password is required";
       toast.error("⚠️ Password is required!", { theme: "dark", autoClose: 3000, style: { backgroundColor: "#9b9ef0", color: "#fff" } });
-    } else if (!/(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}/.test(password)) {
-      newErrors.password =
-        "Password must be 6+ characters with uppercase, number & special char";
-      toast.error("❌ Weak Password! Add uppercase, number & special char", {
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+      toast.error("❌ Password must be at least 6 characters", {
+        theme: "colored",
+        autoClose: 3000,
+        style: { backgroundColor: "#ffd700", color: "#000" },
+      });
+    } else if (!/(?=.*[A-Z])/.test(password)) {
+      newErrors.password = "Password must contain at least one uppercase letter";
+      toast.error("❌ Password must contain at least one uppercase letter", {
+        theme: "colored",
+        autoClose: 3000,
+        style: { backgroundColor: "#ffd700", color: "#000" },
+      });
+    } else if (!/(?=.*\d)/.test(password)) {
+      newErrors.password = "Password must contain at least one number";
+      toast.error("❌ Password must contain at least one number", {
+        theme: "colored",
+        autoClose: 3000,
+        style: { backgroundColor: "#ffd700", color: "#000" },
+      });
+    } else if (!/(?=.*[@$!%*?&])/.test(password)) {
+      newErrors.password = "Password must contain at least one special character (@$!%*?&)";
+      toast.error("❌ Password must contain at least one special character", {
         theme: "colored",
         autoClose: 3000,
         style: { backgroundColor: "#ffd700", color: "#000" },
@@ -87,7 +251,7 @@ const SignUp = () => {
       newErrors.phone = "Phone number is required";
       toast.error("⚠️ Phone number is required!", { theme: "dark", autoClose: 3000, style: { backgroundColor: "#4f46e5", color: "#fff" } });
     } else if (!/^\d{10}$/.test(phone)) {
-      newErrors.phone = "Phone must be 10 digits";
+      newErrors.phone = "Phone must be exactly 10 digits";
       toast.error("❌ Invalid Phone! Must be exactly 10 digits", {
         theme: "colored",
         autoClose: 3000,
@@ -95,16 +259,37 @@ const SignUp = () => {
       });
     }
   
-    // Image Size Validation (Max 3MB)
+    // Image Validation: Standard size (500KB - 2MB recommended) and format check
     if (image) {
-      const fileSizeInMB = image.size / (1024 * 1024); // Convert bytes to MB
-      if (fileSizeInMB > 3) {
-        newErrors.image = "Image size should not exceed 3MB";
-        toast.error("❌ Image too large! Max size: 3MB", {
+      // Check file type
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
+      if (!allowedTypes.includes(image.type)) {
+        newErrors.image = "Only JPEG, PNG, GIF, and WebP images are allowed";
+        toast.error("❌ Invalid image format! Only JPEG, PNG, GIF, and WebP are allowed", {
           theme: "colored",
           autoClose: 3000,
           style: { backgroundColor: "#abbdf9", color: "#000" },
         });
+      } else {
+        // Check file size - Standard size: 500KB to 2MB (without quality reduction)
+        const fileSizeInKB = image.size / 1024; // Convert bytes to KB
+        const fileSizeInMB = image.size / (1024 * 1024); // Convert bytes to MB
+        
+        if (fileSizeInKB < 50) {
+          newErrors.image = "Image size is too small (minimum 50KB)";
+          toast.error("❌ Image too small! Minimum size: 50KB", {
+            theme: "colored",
+            autoClose: 3000,
+            style: { backgroundColor: "#abbdf9", color: "#000" },
+          });
+        } else if (fileSizeInMB > 2) {
+          newErrors.image = "Image size should not exceed 2MB (standard size)";
+          toast.error("❌ Image too large! Max size: 2MB (standard size)", {
+            theme: "colored",
+            autoClose: 3000,
+            style: { backgroundColor: "#abbdf9", color: "#000" },
+          });
+        }
       }
     }
   
@@ -118,27 +303,31 @@ const SignUp = () => {
     e.preventDefault(); // Prevent the form from refreshing the page.
 
     if (!validateInputs()) {
-      toast.error("Please fill all required fields.");
+      toast.error("Please fill all required fields correctly.");
       return;
     }
 
-    const formData = {
-      name,
-      email,
-      password,
-      phone,
-     
-      address1,
-      address2,
-      image, // Optional: Include this if you plan to handle image uploads.
-    };
+    // Create FormData for file upload
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("phone", phone);
+    formData.append("address1", address1 || "");
+    formData.append("address2", address2 || "");
+    
+    // Append image only if it exists
+    if (image) {
+      formData.append("image", image);
+    }
 
     try {
       await dispatch(signupUser(formData));
-      toast.success("Signup successful!");
+      toast.success("Signup successful! Check your email for confirmation.");
       navigate("/");
     } catch (err) {
-      toast.error(`⚠️ ${err.message}`, {
+      const errorMessage = err.message || err.error?.message || "Signup failed. Please try again.";
+      toast.error(`⚠️ ${errorMessage}`, {
         theme: "colored",
         autoClose: 3000,
         style: { backgroundColor: "#ff4d4d", color: "#fff" },
@@ -265,7 +454,34 @@ const SignUp = () => {
               )}
               <Input
                 type="file"
-                onChange={(e) => setImage(e.target.files[0])}
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    // Validate image immediately on selection
+                    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
+                    if (!allowedTypes.includes(file.type)) {
+                      toast.error("❌ Invalid image format! Only JPEG, PNG, GIF, and WebP are allowed", {
+                        theme: "colored",
+                        autoClose: 3000,
+                        style: { backgroundColor: "#abbdf9", color: "#000" },
+                      });
+                      e.target.value = ""; // Clear the input
+                      return;
+                    }
+                    const fileSizeInMB = file.size / (1024 * 1024);
+                    if (fileSizeInMB > 2) {
+                      toast.error("❌ Image too large! Max size: 2MB", {
+                        theme: "colored",
+                        autoClose: 3000,
+                        style: { backgroundColor: "#abbdf9", color: "#000" },
+                      });
+                      e.target.value = ""; // Clear the input
+                      return;
+                    }
+                    setImage(file);
+                  }
+                }}
                 sx={{
                   position: "absolute",
                   top: 0,
@@ -296,9 +512,17 @@ const SignUp = () => {
             variant="outlined"
             margin="normal"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              // Clear error when user starts typing
+              if (errors.email) {
+                setErrors({ ...errors, email: "" });
+              }
+            }}
+            onBlur={(e) => validateField("email", e.target.value)}
             error={!!errors.email}
-          helperText={errors.email}
+            helperText={errors.email}
+            required
             sx={{ backgroundColor: isDarkMode ? "#424242" : "#E2DDFE" }}
           />
           <TextField
@@ -308,9 +532,17 @@ const SignUp = () => {
             variant="outlined"
             margin="normal"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              // Clear error when user starts typing
+              if (errors.password) {
+                setErrors({ ...errors, password: "" });
+              }
+            }}
+            onBlur={(e) => validateField("password", e.target.value)}
             error={!!errors.password}
-          helperText={errors.password}
+            helperText={errors.password}
+            required
             sx={{ backgroundColor: isDarkMode ? "#424242" : "#E2DDFE" }}
           />
           <TextField
@@ -325,15 +557,76 @@ const SignUp = () => {
             sx={{ backgroundColor: isDarkMode ? "#424242" : "#E2DDFE" }}
           />
     
-          <TextField
-            fullWidth
-            label="Address Line 1"
-            variant="outlined"
-            margin="normal"
-            value={address1}
-            onChange={(e) => setAddress1(e.target.value)}
-            sx={{ backgroundColor: isDarkMode ? "#424242" : "#E2DDFE" }}
-          />
+          <Box sx={{ width: "100%", mt: 2 }}>
+            <Box sx={{ display: "flex", gap: 1, alignItems: "flex-start" }}>
+              <TextField
+                fullWidth
+                label="Address Line 1"
+                variant="outlined"
+                margin="normal"
+                value={address1}
+                onChange={(e) => setAddress1(e.target.value)}
+                placeholder="Enter address or use GPS button"
+                sx={{ backgroundColor: isDarkMode ? "#424242" : "#E2DDFE" }}
+              />
+              <Button
+                variant="contained"
+                onClick={handleGetCurrentLocation}
+                disabled={isLoadingLocation}
+                sx={{
+                  mt: 2,
+                  minWidth: "120px",
+                  height: "56px",
+                  backgroundColor: isDarkMode ? "#6E6ADE" : "#7D66D9",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: isDarkMode ? "#7D66D9" : "#6E6ADE",
+                  },
+                  "&:disabled": {
+                    backgroundColor: isDarkMode ? "#424242" : "#ccc",
+                  },
+                }}
+                startIcon={
+                  isLoadingLocation ? (
+                    <Box
+                      component="span"
+                      sx={{
+                        display: "inline-block",
+                        width: "16px",
+                        height: "16px",
+                        border: "2px solid",
+                        borderColor: "white",
+                        borderTopColor: "transparent",
+                        borderRadius: "50%",
+                        animation: "spin 1s linear infinite",
+                        "@keyframes spin": {
+                          "0%": { transform: "rotate(0deg)" },
+                          "100%": { transform: "rotate(360deg)" },
+                        },
+                      }}
+                    />
+                  ) : (
+                    <i className="fas fa-map-marker-alt" />
+                  )
+                }
+              >
+                {isLoadingLocation ? "Loading..." : "Use GPS"}
+              </Button>
+            </Box>
+            <Typography
+              variant="caption"
+              sx={{
+                display: "block",
+                mt: 0.5,
+                ml: 1.5,
+                fontSize: "0.75rem",
+                color: isDarkMode ? "#9e9e9e" : "#666",
+                fontStyle: "italic",
+              }}
+            >
+              💡 Click the "Use GPS" button to automatically fill your current address
+            </Typography>
+          </Box>
           <TextField
             fullWidth
             label="Address Line 2"

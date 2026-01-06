@@ -529,7 +529,7 @@ import logo from "../assets/home2.svg"; // Replace with your logo
 import EngineeringIcon from "@mui/icons-material/Engineering";
 import { FcReadingEbook } from "react-icons/fc";
 import NotificationIcon from "./NotificationIcon";
-import { setUserRole, addMessage } from "../features/chatSlice";
+import { setUserRole } from "../features/chatSlice";
 import socket from "./socket"; // Ensure this is your socket instance
 import PremiumStatus from "./PremiumStatus"
 function Header() {
@@ -559,27 +559,24 @@ function Header() {
   useEffect(() => {
     if (!user) return;
 
+    // Only show toast notifications, don't add messages to state
+    // Messages are handled by ChatComponent to avoid duplicates
     socket.on("receiveMessage", (newMessage) => {
-      console.log("📩 Message received in Customer Header:", newMessage);
-
       if (newMessage.senderModel === "Employee") {
-        console.log("✅ Employee sent a message!");
         toast.info(
-          `New message from ${newMessage.senderName}: ${newMessage.message}`,
+          `New message from ${newMessage.senderName || "Employee"}: ${newMessage.message || "New message"}`,
           {
             position: "top-right",
             autoClose: 3000,
           }
         );
       }
-
-      dispatch(addMessage(newMessage));
     });
 
     return () => {
       socket.off("receiveMessage");
     };
-  }, [dispatch, user]);
+  }, [user]);
 
   useEffect(() => {
     if (!isAuthenticated && localStorage.getItem("token")) {

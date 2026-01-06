@@ -210,22 +210,38 @@ const chatSlice = createSlice({
     },
 
     addMessage: (state, action) => {
-      const { receiverModel } = action.payload;
+      const newMessage = action.payload;
+      const { receiverModel } = newMessage;
 
-      // ✅ If the receiver is the current user, add the message
-      if (receiverModel === state.userRole) {
-        state.newMessages = [action.payload, ...state.newMessages]; // ✅ Latest on top
+      // Check if message already exists (deduplication)
+      const messageId = newMessage._id || `${newMessage.sender}-${newMessage.timestamp}-${newMessage.message?.substring(0, 20)}`;
+      const messageExists = state.messages.some((msg) => {
+        const existingId = msg._id || `${msg.sender}-${msg.timestamp}-${msg.message?.substring(0, 20)}`;
+        return existingId === messageId || 
+               (msg.sender === newMessage.sender && 
+                msg.message === newMessage.message && 
+                Math.abs(new Date(msg.timestamp || msg.createdAt) - new Date(newMessage.timestamp || newMessage.createdAt)) < 2000);
+      });
 
-        if (!state.chatOpen) {
-          state.notificationCount += 1; // ✅ Only increase if chat is closed
+      // Only add if message doesn't exist
+      if (!messageExists) {
+        // ✅ If the receiver is the current user, add to newMessages for notifications
+        if (receiverModel === state.userRole) {
+          // Check if already in newMessages
+          const alreadyInNewMessages = state.newMessages.some((msg) => {
+            const msgId = msg._id || `${msg.sender}-${msg.timestamp}-${msg.message?.substring(0, 20)}`;
+            return msgId === messageId;
+          });
+          
+          if (!alreadyInNewMessages) {
+            state.newMessages = [newMessage, ...state.newMessages]; // ✅ Latest on top
+            // Always increment notification count when message is received
+            state.notificationCount += 1;
+          }
         }
-      }
 
-      state.messages.push(action.payload);
-      console.log(
-        "✅ After addMessage: newMessages =",
-        JSON.stringify(state.newMessages)
-      );
+        state.messages.push(newMessage);
+      }
     },
     clearNotifications: (state) => {
       console.log(
