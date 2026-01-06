@@ -6,6 +6,18 @@ export default defineConfig({
   plugins: [react()],
   assetsInclude: ["**/*.JPG"],
   
+  // Resolve to a single React instance everywhere
+  resolve: {
+    alias: {
+      '@': '/src',
+      '@components': '/src/components',
+      '@assets': '/src/assets',
+      '@features': '/src/features',
+      '@services': '/src/services',
+    },
+    dedupe: ['react', 'react-dom'],
+  },
+  
   // Development server config
   server: {
     host: true,
@@ -34,37 +46,9 @@ export default defineConfig({
       keepNames: false,
     },
     
-    // Chunk splitting for better caching
+    // Let Rollup decide chunking to avoid fragile manual ordering
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          // Vendor chunks - keep React and MUI together to avoid initialization issues
-          if (id.includes('node_modules')) {
-            // Keep React, React-DOM, Emotion, and MUI together to avoid cross-chunk dependencies
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router') || 
-                id.includes('@emotion') || id.includes('@mui')) {
-              return 'vendor-react-mui';
-            }
-            if (id.includes('@reduxjs') || id.includes('react-redux')) {
-              return 'vendor-redux';
-            }
-            if (id.includes('framer-motion')) {
-              return 'vendor-motion';
-            }
-            if (id.includes('axios') || id.includes('dayjs') || id.includes('socket.io')) {
-              return 'vendor-utils';
-            }
-            // Large libraries get their own chunks
-            if (id.includes('chart.js') || id.includes('react-chartjs')) {
-              return 'vendor-charts';
-            }
-            if (id.includes('@syncfusion')) {
-              return 'vendor-syncfusion';
-            }
-            // Other node_modules
-            return 'vendor-other';
-          }
-        },
         // Asset file naming
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
@@ -136,17 +120,6 @@ export default defineConfig({
     devSourcemap: true,
     modules: {
       localsConvention: 'camelCase',
-    },
-  },
-  
-  // Resolve aliases for cleaner imports
-  resolve: {
-    alias: {
-      '@': '/src',
-      '@components': '/src/components',
-      '@assets': '/src/assets',
-      '@features': '/src/features',
-      '@services': '/src/services',
     },
   },
   
